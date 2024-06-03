@@ -54,6 +54,10 @@ const Login = () => {
           <Text style={tw.style(`text-white text-[10px]`,{fontFamily: 'Montserrat'})}>Forgot Password</Text>
         </View>
         <Button onPress={handleLogin}>SIGN IN</Button>
+        <View style={tw`my-1`}></View>
+        {/* <Button onPress={handleLogin}>
+          Google
+        </Button> */}
       </View>
     </View>
   )

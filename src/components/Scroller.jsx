@@ -72,6 +72,10 @@ export default function Scroller({ posts: allPosts, change, profile }) {
         );
     };
 
+    const handleEndReach = () => {
+        setPosts(prevPosts => [...prevPosts, ...allPosts]);
+    }
+
     return (
         <FlatList
             windowSize={4}
@@ -91,6 +95,7 @@ export default function Scroller({ posts: allPosts, change, profile }) {
             keyExtractor={item => item.id}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
+            onEndReached={handleEndReach}
         />
     );
 }

@@ -25,8 +25,63 @@ import uuid from "uuid-random";
 import {FIREBASE_AUTH,FIREBASE_DB} from '../../../firebaseConfig';
 import { LoadUserFai, LoadUserReq, LoadUserSuc, LoginUserFai, LoginUserReq, LoginUserSuc, LogoutUserFai, LogoutUserReq, LogoutUserSuc, RegisterUserFai, RegisterUserReq, RegisterUserSuc,allpostsreq, allusername } from "../ActionType";
 import { saveMediaToStorage } from "../../utils/savepost";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 // import * as GoogleAuthSession from 'expo-google-auth-session';
+// import { GoogleAuthProvider, signInWithCredential,  } from 'firebase/auth';
+
+
+// export const loginWithGoogle = (idToken) => async (dispatch) => {
+//     try {
+//       dispatch({
+//         type: LoginUserReq,
+//       });
+  
+//       const credential = GoogleAuthProvider.credential(idToken);
+//       const userCredential = await signInWithCredential(FIREBASE_AUTH, credential);
+//       const user = userCredential.user;
+//       const docRef = doc(FIREBASE_DB, 'users', user.uid);
+//       const docSnap = await getDoc(docRef);
+  
+//       if (docSnap.exists()) {
+//         // User exists, login successful
+//         const data = {
+//           user: docSnap.data(),
+//           message: "Login Successfully",
+//         };
+//         dispatch({
+//           type: LoginUserSuc,
+//           ...data,
+//         });
+//         return "L";
+//       } else {
+//         // User does not exist, create a new user
+//         const newUser = {
+//           uid: user.uid,
+//           email: user.email,
+//           displayName: user.displayName,
+//           photoURL: user.photoURL,
+//           createdAt: new Date(),
+//         };
+  
+//         await setDoc(docRef, newUser);
+  
+//         dispatch({
+//           type: LoginUserSuc,
+//           user: newUser,
+//           message: "Registration and Login Successful",
+//         });
+//         return "R";
+//       }
+  
+      
+//     } catch (error) {
+//       dispatch({
+//         type: LoginUserFai,
+//         message: "Google Login Failed",
+//       });
+//       console.log(error.message);
+//       return false;
+//     }
+//   };
 
 
 

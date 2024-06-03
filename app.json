@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "infotik",
-    "slug": "infotik-ujb8zza8qt-xpjm2h5t0",
-    "version": "1.0.1",
+    "slug": "infotik",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -50,12 +50,12 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "6dd6a6da-1f78-47f6-90d1-b3077aeb5775"
+        "projectId": "1d66f46c-940e-4d69-a257-4f967c66c36f"
       },
       "router": {
         "origin": false
       }
     },
-    "owner": "mfake5229"
+    "owner": "jaggaho566"
   }
 }
