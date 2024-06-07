@@ -2,7 +2,7 @@
   "expo": {
     "name": "infotik",
     "slug": "infotik",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#0E0E0E"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -35,9 +33,7 @@
       [
         "expo-font",
         {
-          "fonts": [
-            "./assets/fonts/Montserrat-Regular.ttf"
-          ]
+          "fonts": ["./assets/fonts/Montserrat-Regular.ttf"]
         }
       ],
       [
