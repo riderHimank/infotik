@@ -70,10 +70,10 @@ export default function Scroller({ posts: allPosts, change, profile }) {
 
     const feedItemHeight = Dimensions.get('window').height - useMaterialNavBarHeight(profile);
 
-    const renderItem = ({ item }) => {
+    const renderItem = ({ item, index }) => {
         return (
             <View style={{ height: feedItemHeight, backgroundColor: 'black' }}>
-                <PostSingle item={item} ref={ref => (mediaRefs.current[item.id] = ref)} />
+                <PostSingle item={item} key={index} ref={ref => (mediaRefs.current[item.id] = ref)} />
             </View>
         );
     };
@@ -87,7 +87,7 @@ export default function Scroller({ posts: allPosts, change, profile }) {
             windowSize={4}
             data={posts}
             renderItem={renderItem}
-            itialNumToRender={0}
+            initialNumToRender={1}
             maxToRenderPerBatch={2}
             removeClippedSubviews
             viewabilityConfig={{
@@ -98,7 +98,7 @@ export default function Scroller({ posts: allPosts, change, profile }) {
             onViewableItemsChanged={onViewableItemsChanged.current} /*
             to fix the audio leak bug
             */
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id || String(item.index)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             onEndReached={handleEndReach}
