@@ -1,16 +1,16 @@
 {
   "cli": {
-    "version": ">= 7.6.2"
+    "version": ">= 9.2.0"
   },
   "build": {
-    "preview": {
+    "apk": {
       "android": {
         "buildType": "apk"
       }
     },
-    "preview2": {
+    "aab": {
       "android": {
-        "gradleCommand": ":app:assembleRelease"
+        "buildType": "app-bundle"
       }
     },
     "preview3": {
@@ -19,7 +19,11 @@
     "preview4": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
   },
   "submit": {
     "production": {}
