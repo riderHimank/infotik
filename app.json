@@ -2,7 +2,7 @@
   "expo": {
     "name": "infotik_",
     "slug": "infotik_",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#0E0E0E"
       },
-      "package": "com.infotik.infotik_",
+      "package": "com.zeeshan_raza.infotik",
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
