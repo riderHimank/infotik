@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "infotik",
-    "slug": "infotik",
+    "name": "infotik_",
+    "slug": "infotik_",
     "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -52,6 +52,6 @@
         "origin": false
       }
     },
-    "owner": "infotik"
+    "owner": "infotik_10"
   }
 }
