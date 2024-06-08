@@ -95,7 +95,6 @@ const Discover = () => {
     return (
         <View style={tw`flex-1 bg-[${COLORS.primary}] py-2 px-4`}>
             <Text style={tw`text-white text-center text-xl`}>Discover</Text>
-
             <View style={tw`flex flex-row items-center gap-2 p-2 bg-black rounded-md mt-4`}>
                 <Feather name="search" size={24} color={'white'} />
                 <TextInput
@@ -103,6 +102,7 @@ const Discover = () => {
                     placeholderTextColor={'#86878B'}
                     style={tw`text-sm text-white font-montserrat w-full`}
                     onChangeText={setQuery}
+                    autoCapitalize='none'
                 />
             </View>
             {
@@ -118,7 +118,7 @@ const Discover = () => {
                             <ScrollView>
                                 {
                                     users.map((user) => (
-                                        <TouchableOpacity onPress={() => handleProfile(user.uid)}>
+                                        <TouchableOpacity key={user.uid} onPress={() => handleProfile(user.uid)}>
                                             <View style={tw`my-1 p-2 bg-black rounded-md flex flex-row gap-2 items-center`}>
                                                 {
                                                     user?.photoURL ?
@@ -155,13 +155,13 @@ const Discover = () => {
                                         {
                                             all ?
                                                 (allKeyword.map((k, i) => (
-                                                    <GradientText key={i} onPress={() => setSelectedKeyword(i)} selected={allKeyword[selectedKeyword] == k}>
+                                                    <GradientText key={k} onPress={() => setSelectedKeyword(i)} selected={allKeyword[selectedKeyword] == k}>
                                                         {k}
                                                     </GradientText>
                                                 )))
                                                 : (
                                                     allKeyword.slice(0, 7).map((k, i) => (
-                                                        <GradientText key={i} onPress={() => setSelectedKeyword(i)} selected={allKeyword[selectedKeyword] == k}>
+                                                        <GradientText key={k} onPress={() => setSelectedKeyword(i)} selected={allKeyword[selectedKeyword] == k}>
                                                             {k}
                                                         </GradientText>
                                                     ))
