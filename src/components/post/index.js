@@ -355,10 +355,13 @@ export const PostSingle = forwardRef(({ item }, parentRef) => {
                 <Text
                   style={tw`text-sm text-[${COLORS.secondary}] font-montserrat`}
                 >
-                  BBC News
+                  News
                 </Text>
-                <Text style={tw`text-[10px] text-white flex-1 font-montserrat`}>
-                  {item.newsdescription}
+                <Text
+                  style={tw`text-[10px] text-white flex-1 font-montserrat`}
+                  numberOfLines={3}
+                >
+                  {item.description}
                 </Text>
                 <TouchableOpacity onPress={() => handleOpen(item.newslink)}>
                   <LinearGradient
