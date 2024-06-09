@@ -33,7 +33,7 @@ const RenderProfile = ({ user: puser, change, posts }) => {
           <TouchableOpacity style={tw`pb-2 border-b-2 border-white px-4`}>
             <Image source={require('../../assets/tabs.png')} style={{ objectFit: 'contain' }} />
           </TouchableOpacity>
-          <TouchableOpacity style={tw`pb-2 px-4`}>
+          <TouchableOpacity onPress={() => console.log('Tapped')} style={tw`pb-2 px-4`} >
             <Image source={require('../../assets/hideheart.png')} style={{ objectFit: 'contain' }} />
           </TouchableOpacity>
         </View>
