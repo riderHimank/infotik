@@ -90,7 +90,12 @@ const Keyword = () => {
       if (prev.includes(k)) {
         return prev.filter(ke => ke != k);
       } else {
-        return [...prev, k];
+        if (prev.length < 5) {
+          return [...prev, k];
+        } else {
+          alert('You can only select up to 5 keywords.');
+          return prev;
+        }
       }
     })
   }
@@ -114,7 +119,9 @@ const Keyword = () => {
           Choose some of your favorite topics
         </Text>
         <Text style={tw`text-white text-2xl text-center`}>
-          (0/5)
+          <Text style={tw`text-white text-2xl text-center`}>
+            ({keyword.length}/5)
+          </Text>
         </Text>
       </View>
 
