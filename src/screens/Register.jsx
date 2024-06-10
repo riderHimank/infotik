@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import tw from '../customtwrnc';
 import { COLORS } from '../constants';
@@ -54,7 +54,7 @@ const Register = () => {
         <View style={tw`flex-1 bg-[${COLORS.primary}] flex justify-center items-center`}>
             <View style={tw` w-[18rem] py-4 rounded-md`}>
                 <View style={tw`flex items-center`}>
-                    <Image source={require('../../assets/logo.png')} style={{ width: 60,height: 60, resizeMode: 'contain', marginBottom: 5 }} />
+                    <Image source={require('../../assets/logo.png')} style={{ width: 60, height: 60, resizeMode: 'contain', marginBottom: 5 }} />
                 </View>
 
 
@@ -67,24 +67,24 @@ const Register = () => {
 
                 <View style={tw`mb-4 mt-1 flex flex-row justify-between`}>
                     <View style={tw`flex flex-row items-center gap-1`}>
-                        <Text style={tw.style(`text-white text-[10px]`,{fontFamily: 'Montserrat'})}>You Already have account ?</Text>
+                        <Text style={tw.style(`text-white text-[11px]`, { fontFamily: 'Montserrat' })}>You Already have account ?</Text>
                         <TouchableOpacity>
-                            <Text style={tw.style(`text-[${COLORS.secondary}] text-[10px]`,{fontFamily: 'Montserrat'})} onPress={() => navigation.navigate('login')}>Sign In</Text>
+                            <Text style={tw.style(`text-[${COLORS.secondary}] text-[11px]`, { fontFamily: 'Montserrat' })} onPress={() => navigation.navigate('login')}>Sign In</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-                <Button onPress={handleRegister}>SIGN UP</Button>                
+                <Button onPress={handleRegister}>SIGN UP</Button>
 
 
                 <View style={tw`mt-5`}>
-                    <Button onPress={handleRegister}>Google</Button> 
-                </View>             
+                    <Button onPress={handleRegister}>Google</Button>
+                </View>
                 <View style={tw`mt-2`}>
-                    <Button onPress={handleRegister}>Facebook</Button> 
-                </View>             
+                    <Button onPress={handleRegister}>Facebook</Button>
+                </View>
 
-                
-                
+
+
             </View>
         </View>
     )
