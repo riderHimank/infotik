@@ -1,12 +1,14 @@
-import { View, Text, Image, TouchableOpacity, ToastAndroid } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import tw from '../customtwrnc';
-import { COLORS } from '../constants';
-import Input from '../components/Input';
-import Button from '../components/Button';
-import { useNavigation, StackActions } from '@react-navigation/native';
-import { getUsername, register } from '../redux/actions/user';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Image, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import FbLogo from '../../assets/fb_logo2.png';
+import GoogleLogo from '../../assets/google_icon.png';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import { COLORS } from '../constants';
+import tw from '../customtwrnc';
+import { getUsername, register } from '../redux/actions/user';
 
 
 
@@ -65,11 +67,11 @@ const Register = () => {
                 <Input placeholder={"Enter Your email"} value={email} setValue={setEmail} />
                 <Input placeholder={"Enter Your password"} value={password} setValue={setPassword} secureTextEntry={true} />
 
-                <View style={tw`mb-4 mt-1 flex flex-row justify-between`}>
+                <View style={tw`mb-4 mt-1 flex flex-row justify-center`}>
                     <View style={tw`flex flex-row items-center gap-1`}>
-                        <Text style={tw.style(`text-white text-[11px]`, { fontFamily: 'Montserrat' })}>You Already have account ?</Text>
-                        <TouchableOpacity>
-                            <Text style={tw.style(`text-[${COLORS.secondary}] text-[11px]`, { fontFamily: 'Montserrat' })} onPress={() => navigation.navigate('login')}>Sign In</Text>
+                        <Text style={tw.style(`text-[${COLORS.white}] text-[12px]`, { fontFamily: 'Montserrat' })}>You Already have an account?</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                            <Text style={tw.style(`text-[${COLORS.secondary}] text-[13px]`, { fontFamily: 'Montserrat' })}>Sign In</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -77,10 +79,22 @@ const Register = () => {
 
 
                 <View style={tw`mt-5`}>
-                    <Button onPress={handleRegister}>Google</Button>
+                    <Button onPress={() => {
+                        ToastAndroid.show('Coming soon', ToastAndroid.SHORT)
+                        handleRegister()
+                    }}>
+                        <Image source={GoogleLogo} style={{ width: 22, height: 22 }} />
+                        {" "}Google
+                    </Button>
                 </View>
-                <View style={tw`mt-2`}>
-                    <Button onPress={handleRegister}>Facebook</Button>
+                <View style={tw`mt-5`}>
+                    <Button onPress={() => {
+                        ToastAndroid.show('Coming soon', ToastAndroid.SHORT)
+                        handleRegister()
+                    }
+                    }>
+                        <Image source={FbLogo} style={{ width: 24, height: 24 }} />
+                        {" "}Facebook</Button>
                 </View>
 
 

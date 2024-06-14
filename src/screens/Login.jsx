@@ -1,11 +1,11 @@
-import { View, Text, Image, TouchableOpacity, ToastAndroid } from 'react-native'
-import React, { useLayoutEffect, useState } from 'react'
-import tw from 'twrnc';
-import { COLORS } from '../constants';
-import Input from '../components/Input';
-import Button from '../components/Button';
-import { useNavigation, StackActions } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Image, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import tw from 'twrnc';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import { COLORS } from '../constants';
 import { login } from '../redux/actions/user';
 
 const Login = () => {
@@ -44,19 +44,23 @@ const Login = () => {
         <Input placeholder={"Enter Your email"} value={email} setValue={setEmail} />
         <Input placeholder={"Enter Your password"} value={password} setValue={setPassword} secureTextEntry={true} />
 
-        <View style={tw`mb-4 mt-1 flex flex-row justify-between`}>
-          <View style={tw`flex flex-row items-center gap-1`}>
-            <Text style={tw.style(`text-white text-[11px]`, { fontFamily: 'Montserrat' })}>Don't have an account ?</Text>
-            <TouchableOpacity>
-              <Text style={tw.style(`text-[${COLORS.secondary}] text-[11px] translate-y-2`, { fontFamily: 'Montserrat' })} onPress={() => navigation.navigate('register')}>Sign Up</Text>
+        <View style={tw`mb-3 mt-1 flex flex-row justify-center`}>
+          <View style={tw`flex flex-row  gap-1`}>
+            <Text style={tw.style(`text-[${COLORS.white}] text-[13px]`, { fontFamily: 'Montserrat' })}>Don't have an account?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('register')}  >
+              <Text style={tw.style(`text-[${COLORS.secondary}] text-[13px] translate-y-2`, { fontFamily: 'Montserrat' })} > Sign Up  </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={
-            ToastAndroid.show('Coming soon', ToastAndroid.SHORT)}>
-            <Text style={tw.style(`text-white text-[11px]`, { fontFamily: 'Montserrat' })}>Forgot Password</Text>
+        </View>
+        <View>
+          <TouchableOpacity onPress={() => ToastAndroid.show('Coming soon', ToastAndroid.SHORT)}>
+            <Text style={tw.style(` text-center text-white text-[13px] mb-3`, { fontFamily: 'Montserrat' })}> Forgot Password?</Text>
           </TouchableOpacity>
         </View>
-        <Button onPress={handleLogin}>SIGN IN</Button>
+        <TouchableOpacity >
+          <Button onPress={handleLogin} >SIGN IN</Button>
+
+        </TouchableOpacity>
         <View style={tw`my-1`}></View>
         {/* <Button onPress={handleLogin}>
           Google
