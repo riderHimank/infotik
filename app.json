@@ -16,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#0E0E0E"
@@ -30,6 +31,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      ["@react-native-google-signin/google-signin"],
       [
         "expo-font",
         {
