@@ -8,8 +8,7 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import { COLORS } from '../constants';
 import tw from '../customtwrnc';
-import { getUsername, register } from '../redux/actions/user';
-
+import { configureGoogleSignIn, getUsername, GoogleSignUp, register } from '../redux/actions/user';
 
 
 const Register = () => {
@@ -24,6 +23,30 @@ const Register = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
+
+    useEffect(() => {
+        configureGoogleSignIn();
+
+    }, []);
+
+    const handleGoogleSignIn = async () => {
+        try {
+            const res = await dispatch(GoogleSignUp());
+            if (res && typeof res === 'object') {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'home' }],
+                });
+            } else if (res) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'keyword' }],
+                });
+            }
+        } catch (error) {
+            ToastAndroid.show('Google sign in failed.', ToastAndroid.SHORT);
+        }
+    }
 
     const handleRegister = async (async) => {
         if (!email || !password || !name) {
@@ -79,10 +102,7 @@ const Register = () => {
 
 
                 <View style={tw`mt-5`}>
-                    <Button onPress={() => {
-                        ToastAndroid.show('Coming soon', ToastAndroid.SHORT)
-                        handleRegister()
-                    }}>
+                    <Button onPress={handleGoogleSignIn}>
                         <Image source={GoogleLogo} style={{ width: 22, height: 22 }} />
                         {" "}Google
                     </Button>
