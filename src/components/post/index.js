@@ -60,6 +60,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
   const navigation = useNavigation();
   const [mute, setMute] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
 
   useImperativeHandle(parentRef, () => ({
     play,
@@ -244,6 +245,15 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
     setLoading(false);
   };
 
+  function isValidUrl(string) {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   return (
     <>
       {isLoading && (
@@ -306,7 +316,9 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
               <View style={tw`py-2 px-4 flex gap-2 items-end`}>
                 <View style={tw`flex gap-0 items-center`}>
                   <TouchableOpacity onPress={handleProfile}>
-                    {user?.photoURL ? (
+                    {user?.photoURL &&
+                    isValidUrl(user?.photoURL) &&
+                    !imageFailedToLoad ? (
                       <Image
                         source={{ uri: user?.photoURL }}
                         style={{
@@ -317,10 +329,11 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                           borderRadius: 9999,
                           marginBottom: 8,
                         }}
+                        onError={() => setImageFailedToLoad(true)}
                       />
                     ) : (
                       <Avatar.Icon
-                        size={35}
+                        size={36}
                         backgroundColor={COLORS.secondary}
                         icon={"account"}
                       />
