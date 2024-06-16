@@ -1,4 +1,4 @@
-import { Video, ResizeMode } from "expo-av";
+import { ResizeMode, Video } from "expo-av";
 import React, {
   forwardRef,
   useEffect,
@@ -7,29 +7,33 @@ import React, {
   useState,
 } from "react";
 import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
   ActivityIndicator,
-  Linking,
-  TouchableOpacity,
   FlatList,
-  TouchableWithoutFeedback,
   Image,
+  Linking,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 // import { useUser } from '../../hooks/useUser'
 // import PostSingleOverlay from './overlay'
-import styles from "./styles";
-import { COLORS } from "../../constants";
-import tw from "../../customtwrnc";
 import { Feather } from "@expo/vector-icons";
-import { LikePost, checkLike, getUserById } from "../../redux/actions/user";
-import { LinearGradient } from "expo-linear-gradient";
-import CommentModel from "./CommentModel";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Avatar } from "react-native-paper";
 import index from "uuid-random";
+import { COLORS } from "../../constants";
+import tw from "../../customtwrnc";
+import {
+  LikePost,
+  checkFollow,
+  checkLike,
+  followUser,
+  getUserById,
+} from "../../redux/actions/user";
+import CommentModel from "./CommentModel";
+import styles from "./styles";
 
 const renderItem = ({ item }) => (
   <TouchableOpacity>
@@ -41,7 +45,7 @@ const renderItem = ({ item }) => (
   </TouchableOpacity>
 );
 
-export const PostSingle = forwardRef(({ item }, parentRef) => {
+export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
   const video = React.useRef(null);
   const timeoutref = React.useRef(null);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -204,6 +208,42 @@ export const PostSingle = forwardRef(({ item }, parentRef) => {
     video.current.setIsMutedAsync(false);
   };
 
+  const [loading, setLoading] = useState(false);
+
+  const { followedUsers, setFollowedUsers } = props;
+  const isFollowing = followedUsers.has(item.creator);
+
+  useEffect(() => {
+    (async function () {
+      if (user) {
+        const ans = await checkFollow(user.uid);
+        if (ans) {
+          followedUsers.add(user.uid);
+        } else {
+          followedUsers.delete(user.uid);
+        }
+        setFollowedUsers(new Set(followedUsers));
+      }
+    })();
+  }, [user]);
+
+  const handleFollow = async () => {
+    if (loading) {
+      console.log("loading...");
+      return;
+    }
+    setLoading(true);
+    const isCurrentlyFollowing = followedUsers.has(user.uid);
+    await followUser(user.uid, isCurrentlyFollowing);
+    if (isCurrentlyFollowing) {
+      followedUsers.delete(user.uid);
+    } else {
+      followedUsers.add(user.uid);
+    }
+    setFollowedUsers(new Set(followedUsers));
+    setLoading(false);
+  };
+
   return (
     <>
       {isLoading && (
@@ -335,10 +375,22 @@ export const PostSingle = forwardRef(({ item }, parentRef) => {
                   </Text>
                 </View>
               </View>
-              <View style={tw`px-4`}>
+              <View style={tw`px-4 flex-row justify-start items-center gap-3 `}>
                 <Text style={tw`text-white text-lg font-montserrat`}>
                   @{user?.username}
                 </Text>
+                <TouchableOpacity
+                  style={tw`py-1 px-2 rounded-md border border-[${
+                    COLORS.secondary
+                  }] flex flex-row items-center gap-1 ${
+                    isFollowing ? `bg-[${COLORS.secondary}] text-white` : ""
+                  }`}
+                  onPress={handleFollow}
+                >
+                  <Text style={tw`text-white text-base font-montserrat`}>
+                    {isFollowing ? "Unfollow" : "Follow"}
+                  </Text>
+                </TouchableOpacity>
               </View>
               <View style={tw`py-2 px-4`}>
                 <FlatList

@@ -1,9 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, View, StyleSheet } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import useMaterialNavBarHeight from '../hooks/useMaterialNavBarHeight';
 import PostSingle from './post';
-import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 
 export default function Scroller({ posts: allPosts, change, profile }) {
     const [posts, setPosts] = useState(allPosts);
@@ -70,10 +70,12 @@ export default function Scroller({ posts: allPosts, change, profile }) {
 
     const feedItemHeight = Dimensions.get('window').height - useMaterialNavBarHeight(profile);
 
+    const [followedUsers, setFollowedUsers] = useState(new Set());
     const renderItem = ({ item, index }) => {
         return (
             <View style={{ height: feedItemHeight, backgroundColor: 'black' }}>
-                <PostSingle item={item} key={index} ref={ref => (mediaRefs.current[item.id] = ref)} />
+                <PostSingle followedUsers={followedUsers}
+                    setFollowedUsers={setFollowedUsers} item={item} key={index} ref={ref => (mediaRefs.current[item.id] = ref)} />
             </View>
         );
     };
