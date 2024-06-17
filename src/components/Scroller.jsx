@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import useMaterialNavBarHeight from '../hooks/useMaterialNavBarHeight';
 import PostSingle from './post';
 
-export default function Scroller({ posts: allPosts, change, profile }) {
+export default function Scroller({ posts: allPosts, change, profile, currentIndex }) {
     const [posts, setPosts] = useState(allPosts);
     const isScrollTab = useRef(true);
     const mediaRefs = useRef([]);
@@ -88,6 +88,10 @@ export default function Scroller({ posts: allPosts, change, profile }) {
         <FlatList
             windowSize={4}
             data={posts}
+            initialScrollIndex={currentIndex}
+            getItemLayout={(data, index) => (
+                { length: feedItemHeight, offset: feedItemHeight * index, index }
+            )}
             renderItem={renderItem}
             initialNumToRender={1}
             maxToRenderPerBatch={2}
