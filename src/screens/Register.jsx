@@ -63,12 +63,14 @@ const Register = () => {
     }
 
     useEffect(() => {
-        if (usernames.includes(username)) {
-            setError('this username is already taken');
+        if (username !== username.toLowerCase()) {
+            setError('Username must be in lowercase');
+        } else if (usernames.includes(username)) {
+            setError('This username is already taken');
         } else {
             setError('');
         }
-    }, [username])
+    }, [username]);
 
     useEffect(() => {
         (async function () {
@@ -84,10 +86,10 @@ const Register = () => {
 
 
                 <Input placeholder={"Enter Your name"} value={name} setValue={setName} />
-                <Input placeholder={"Enter Your username"} value={username} setValue={setUsername} />
+                <Input autoCapitalize='none' placeholder={"Enter Your username"} value={username} setValue={setUsername} />
                 {error && <Text style={tw`text-xs text-red-400 px-2 font-montserrat`}>{error}</Text>}
 
-                <Input placeholder={"Enter Your email"} value={email} setValue={setEmail} />
+                <Input keyboardType={'email-address'} placeholder={"Enter Your email"} value={email} setValue={setEmail} />
                 <Input placeholder={"Enter Your password"} value={password} setValue={setPassword} secureTextEntry={true} />
 
                 <View style={tw`mb-4 mt-1 flex flex-row justify-center`}>
