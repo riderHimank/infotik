@@ -2,10 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Image, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import FbLogo from '../../assets/fb_logo2.png';
+import FbLogo from '../../assets/fb-icon.png';
 import GoogleLogo from '../../assets/google_icon.png';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import SocialButton from '../components/SocialButton';
 import { COLORS } from '../constants';
 import tw from '../customtwrnc';
 import { configureGoogleSignIn, getUsername, GoogleSignUp, register } from '../redux/actions/user';
@@ -102,25 +103,23 @@ const Register = () => {
                 </View>
                 <Button onPress={handleRegister}>SIGN UP</Button>
 
-
-                <View style={tw`mt-5`}>
-                    <Button onPress={handleGoogleSignIn}>
-                        <Image source={GoogleLogo} style={{ width: 22, height: 22 }} />
-                        {" "}Google
-                    </Button>
-                </View>
-                <View style={tw`mt-5`}>
-                    <Button onPress={() => {
-                        ToastAndroid.show('Coming soon', ToastAndroid.SHORT)
+                <SocialButton
+                    logo={GoogleLogo}
+                    color="#fff"
+                    textColor={'rgb(64 64 64);'}
+                    text="Sign in with Google"
+                    onPress={handleGoogleSignIn}
+                />
+                <SocialButton
+                    logo={FbLogo}
+                    color="rgb(59 130 246)"
+                    text="Sign in with Facebook"
+                    textColor={'white'}
+                    onPress={() => {
+                        ToastAndroid.show('Feature coming soon.', ToastAndroid.SHORT);
                         handleRegister()
-                    }
-                    }>
-                        <Image source={FbLogo} style={{ width: 24, height: 24 }} />
-                        {" "}Facebook</Button>
-                </View>
-
-
-
+                    }}
+                />
             </View>
         </View>
     )
