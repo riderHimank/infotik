@@ -393,14 +393,12 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   @{user?.username}
                 </Text>
                 <TouchableOpacity
-                  style={tw`py-1 px-2 rounded-md border border-[${
-                    COLORS.secondary
-                  }] flex flex-row items-center gap-1 ${
-                    isFollowing ? `bg-[${COLORS.secondary}] text-white` : ""
+                  style={tw`py-1 px-2 rounded-md border border-white flex flex-row items-center gap-1 ${
+                    isFollowing ? `bg-transparent text-white` : ""
                   }`}
                   onPress={handleFollow}
                 >
-                  <Text style={tw`text-white text-base font-montserrat`}>
+                  <Text style={tw`text-white text-base font-montserrat `}>
                     {isFollowing ? "Unfollow" : "Follow"}
                   </Text>
                 </TouchableOpacity>
