@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Image, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import Button from '../components/Button';
@@ -33,11 +33,13 @@ const Login = () => {
       });
     }
   }
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
   return (
     <View style={tw`flex-1 bg-[${COLORS.primary}] flex justify-center items-center`}>
       <View style={tw` w-[18rem] py-4 rounded-md`}>
         <View style={tw`flex items-center`}>
-          <Image source={require('../../assets/logo.png')} style={{ width: 60, height: 60, resizeMode: 'contain', marginBottom: 5 }} />
+          <Image source={require('../../assets/inapplogo.png')} style={{ width: windowWidth * 0.5, height: windowHeight * 0.3, marginBottom: 2 }} />
         </View>
 
 
@@ -57,10 +59,9 @@ const Login = () => {
             <Text style={tw.style(` text-center text-white text-[13px] mb-3`, { fontFamily: 'Montserrat' })}> Forgot Password?</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity >
+        <View style={tw`items-center mt-1`}>
           <Button onPress={handleLogin} >SIGN IN</Button>
-
-        </TouchableOpacity>
+        </View>
         <View style={tw`my-1`}></View>
         {/* <Button onPress={handleLogin}>
           Google
