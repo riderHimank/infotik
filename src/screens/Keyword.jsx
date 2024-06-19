@@ -90,10 +90,10 @@ const Keyword = () => {
       if (prev.includes(k)) {
         return prev.filter(ke => ke != k);
       } else {
-        if (prev.length < 5) {
+        if (prev.length < 10) {
           return [...prev, k];
         } else {
-          alert('You can only select up to 5 keywords.');
+          alert('You can only select up to 10 keywords.');
           return prev;
         }
       }
@@ -120,7 +120,7 @@ const Keyword = () => {
         </Text>
         <Text style={tw`text-white text-2xl text-center`}>
           <Text style={tw`text-white text-2xl text-center`}>
-            ({keyword.length}/5)
+            ({keyword.length}/10)
           </Text>
         </Text>
       </View>
