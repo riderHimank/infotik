@@ -136,7 +136,7 @@ const Keyword = () => {
         }
       </View>
 
-      <View style={tw`p-4 px-8`}>
+      <View style={tw`p-4 px-8 items-center`}>
         <Button onPress={handleNext}>NEXT</Button>
       </View>
     </View>
