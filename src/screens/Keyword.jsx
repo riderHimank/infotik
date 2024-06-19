@@ -28,32 +28,32 @@ export const GradientText = ({ children, selected, onPress }) => {
         !selected ? (
           <TouchableOpacity onPress={onPress}>
             <View
-              
+
               style={tw`p-1 px-3 rounded-2xl flex items-center border border-[${COLORS.secondary}]`}
 
             >
               <Text style={tw`text-white text-sm font-montserrat text-[${COLORS.secondary}]`}>{children}</Text>
             </View>
           </TouchableOpacity>
-        ):
-        (
-          <TouchableOpacity onPress={onPress}>
-            <LinearGradient
-              colors={['#53C8D8', '#668AF7']}
-              style={tw`p-1 px-3 rounded-3xl flex items-center `}
+        ) :
+          (
+            <TouchableOpacity onPress={onPress}>
+              <LinearGradient
+                colors={['#53C8D8', '#668AF7']}
+                style={tw`p-1 px-3 rounded-3xl flex items-center `}
 
-            >
-              <Text style={tw`text-white text-sm font-montserrat`}>{children}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )
+              >
+                <Text style={tw`text-white text-sm font-montserrat`}>{children}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )
       }
     </>
-    
+
   );
 };
 
-const allKeyword =[
+const allKeyword = [
   '#News',
   '#Politics',
   '#Science',
@@ -87,20 +87,25 @@ const Keyword = () => {
 
   const handleSelect = (k) => {
     setKeyword(prev => {
-      if(prev.includes(k)){
+      if (prev.includes(k)) {
         return prev.filter(ke => ke != k);
-      }else{
-        return [...prev,k];
+      } else {
+        if (prev.length < 10) {
+          return [...prev, k];
+        } else {
+          alert('You can only select up to 10 keywords.');
+          return prev;
+        }
       }
     })
   }
   const navigation = useNavigation();
   const handleNext = async () => {
     const res = await saveKeyword(keyword);
-    if(res){
+    if (res) {
       navigation.reset({
-          index: 0,
-          routes: [{ name: 'home' }],
+        index: 0,
+        routes: [{ name: 'home' }],
       });
     }
   }
@@ -114,22 +119,24 @@ const Keyword = () => {
           Choose some of your favorite topics
         </Text>
         <Text style={tw`text-white text-2xl text-center`}>
-          (0/5)
+          <Text style={tw`text-white text-2xl text-center`}>
+            ({keyword.length}/10)
+          </Text>
         </Text>
       </View>
 
 
       <View style={tw`p-4 flex flex-wrap flex-row gap-3`}>
         {
-          allKeyword.map((k) => (
-            <GradientText onPress={() => handleSelect(k)} selected={keyword.includes(k)}>
+          allKeyword.map((k, index) => (
+            <GradientText key={index} onPress={() => handleSelect(k)} selected={keyword.includes(k)}>
               {k}
             </GradientText>
           ))
         }
       </View>
 
-      <View style={tw`p-4 px-8`}>
+      <View style={tw`p-4 px-8 items-center`}>
         <Button onPress={handleNext}>NEXT</Button>
       </View>
     </View>

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "infotik",
-    "slug": "infotik",
-    "version": "1.0.2",
+    "name": "infotik_",
+    "slug": "infotik_",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -11,13 +11,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#0E0E0E"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#0E0E0E"
@@ -32,12 +31,11 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      ["@react-native-google-signin/google-signin"],
       [
         "expo-font",
         {
-          "fonts": [
-            "./assets/fonts/Montserrat-Regular.ttf"
-          ]
+          "fonts": ["./assets/fonts/Montserrat-Regular.ttf"]
         }
       ],
       [
@@ -50,12 +48,12 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "1d66f46c-940e-4d69-a257-4f967c66c36f"
+        "projectId": "21508d4e-ab26-44f3-9e89-282010386762"
       },
       "router": {
         "origin": false
       }
     },
-    "owner": "jaggaho566"
+    "owner": "infotik_10"
   }
 }

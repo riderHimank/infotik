@@ -1,11 +1,11 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, View, StyleSheet } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import useMaterialNavBarHeight from '../hooks/useMaterialNavBarHeight';
 import PostSingle from './post';
-import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 
-export default function Scroller({ posts: allPosts, change, profile }) {
+export default function Scroller({ posts: allPosts, change, profile, currentIndex }) {
     const [posts, setPosts] = useState(allPosts);
     const isScrollTab = useRef(true);
     const mediaRefs = useRef([]);
@@ -48,15 +48,21 @@ export default function Scroller({ posts: allPosts, change, profile }) {
             const cell = mediaRefs.current[element.key];
             if (cell) {
                 if (element.isViewable && isScrollTab.current) {
+                    // Stop all videos
                     for (let index = 0; index < storeCellRef.current.length; index++) {
                         const cell = storeCellRef.current[index];
                         cell.stop();
                     }
+                    // Clear the array
+                    storeCellRef.current = [];
+                    // Play the current video
                     cell.play();
                     currentVideoRes.current = cell;
                     storeCellRef.current.push(cell);
                 } else {
                     cell.stop();
+                    // Remove the cell from the array
+                    storeCellRef.current = storeCellRef.current.filter(c => c !== cell);
                 }
             }
         });
@@ -64,10 +70,12 @@ export default function Scroller({ posts: allPosts, change, profile }) {
 
     const feedItemHeight = Dimensions.get('window').height - useMaterialNavBarHeight(profile);
 
-    const renderItem = ({ item }) => {
+    const [followedUsers, setFollowedUsers] = useState(new Set());
+    const renderItem = ({ item, index }) => {
         return (
             <View style={{ height: feedItemHeight, backgroundColor: 'black' }}>
-                <PostSingle item={item} ref={ref => (mediaRefs.current[item.id] = ref)} />
+                <PostSingle followedUsers={followedUsers}
+                    setFollowedUsers={setFollowedUsers} item={item} key={index} ref={ref => (mediaRefs.current[item.id] = ref)} />
             </View>
         );
     };
@@ -80,19 +88,23 @@ export default function Scroller({ posts: allPosts, change, profile }) {
         <FlatList
             windowSize={4}
             data={posts}
+            initialScrollIndex={currentIndex}
+            getItemLayout={(data, index) => (
+                { length: feedItemHeight, offset: feedItemHeight * index, index }
+            )}
             renderItem={renderItem}
-            itialNumToRender={0}
+            initialNumToRender={1}
             maxToRenderPerBatch={2}
             removeClippedSubviews
             viewabilityConfig={{
-                itemVisiblePercentThreshold: 0
+                itemVisiblePercentThreshold: 50
             }}
             pagingEnabled
             decelerationRate={'normal'}
             onViewableItemsChanged={onViewableItemsChanged.current} /*
             to fix the audio leak bug
             */
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id || String(item.index)}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             onEndReached={handleEndReach}
