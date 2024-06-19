@@ -102,7 +102,7 @@ const Register = () => {
         <View style={tw`flex-1 bg-[${COLORS.primary}] flex justify-around items-center`}>
             <View style={tw` w-[18rem] py-2 rounded-md`}>
                 <View style={tw`flex items-center mb-2 `}>
-                    <Image source={require('../../assets/inapplogo.png')} style={{ width: windowWidth * 0.5, height: windowHeight * 0.3, marginBottom: 2 }} />
+                    <Image source={require('../../assets/inapplogo.png')} style={{ width: windowWidth * 0.6, height: windowHeight * 0.3, marginBottom: 2 }} />
                 </View>
 
                 {showForm ? (
