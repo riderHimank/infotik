@@ -15,90 +15,90 @@ import NavBarGeneral from './general/navbar'
 
 
 
-export default function ProfileHeader({ user:puser , change}) {
+export default function ProfileHeader({ user: puser, change }) {
     const navigation = useNavigation()
     const [user, setUser] = useState();
-    
+
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
 
 
-   
+
 
     useEffect(() => {
         setUser(puser);
-    },[change])
+    }, [change])
 
     useEffect(() => {
-        (async function(){
-            if(user){
+        (async function () {
+            if (user) {
                 const ans = await checkFollow(user.uid);
                 setIsFollowing(ans);
             }
         })()
-    },[user])
+    }, [user])
 
 
     const handleFollow = async () => {
-        if(loading){
+        if (loading) {
             console.log('lading...')
             return
-        }         
+        }
         setLoading(true);
         setIsFollowing(prev => !prev);
-        await followUser( user.uid, isFollowing );
+        await followUser(user.uid, isFollowing);
         setLoading(false);
     }
 
     // const isFollowing = useFollowing(firebase.auth().currentUser.uid, user.uid).data
     // const isFollowingMutation = useFollowingMutation()
-    
+
     const renderFollowButton = () => {
         if (isFollowing) {
             return (
                 <View>
 
-                
-                <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity
-                        style={buttonStyles.grayOutlinedButton}
-                        onPress={() => navigation.navigate('chatSingle', { contactId: user?.uid })}
-                    >
-                        <Text style={buttonStyles.grayOutlinedButtonText}>Message</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={buttonStyles.grayOutlinedIconButton}
-                        onPress={handleFollow}
-                    >
-                        <Feather name="user-check" size={20} color={'whitesmoke'}/>
-                    </TouchableOpacity>
-                </View>
-                <Text style={tw`py-2 text-[#86878B] text-center`}>{user?.bio}</Text>
+
+                    <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity
+                            style={buttonStyles.grayOutlinedButton}
+                            onPress={() => navigation.navigate('chatSingle', { contactId: user?.uid })}
+                        >
+                            <Text style={buttonStyles.grayOutlinedButtonText}>Message</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={buttonStyles.grayOutlinedIconButton}
+                            onPress={handleFollow}
+                        >
+                            <Feather name="user-check" size={20} color={'whitesmoke'} />
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={tw`py-2 text-[#86878B] text-center`}>{user?.bio}</Text>
                 </View>
             )
         } else {
             return (
                 <View>
-                <View style={tw`flex flex-row items-center gap-2`}>
+                    <View style={tw`flex flex-row items-center gap-2`}>
 
-                    <TouchableOpacity
-                        style={tw`py-1 px-4 rounded-md border border-[${COLORS.secondary}] flex flex-row items-center gap-1 ${isFollowing ? `bg-[${COLORS.secondary}] text-white` : ''}`}
-                        onPress={handleFollow}
-                    >
+                        <TouchableOpacity
+                            style={tw`py-1 px-4 rounded-md border border-[${COLORS.secondary}] flex flex-row items-center gap-1 ${isFollowing ? `bg-[${COLORS.secondary}] text-white` : ''}`}
+                            onPress={handleFollow}
+                        >
 
-                        <Text style={tw`text-white font-montserrat font-semibold`}>Follow</Text>
-                        <Text style={tw`text-white text-2xl font-montserrat`}>+</Text>
-                    </TouchableOpacity>
+                            <Text style={tw`text-white font-montserrat font-semibold`}>Follow</Text>
+                            <Text style={tw`text-white text-2xl font-montserrat`}>+</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={tw`py-[1.6px] px-2 rounded-md border border-[${COLORS.secondary}] flex flex-row items-center gap-1`}
-                    >
+                        <TouchableOpacity
+                            style={tw`py-[1.6px] px-2 rounded-md border border-[${COLORS.secondary}] flex flex-row items-center gap-1`}
+                        >
 
-                       <Image source={require('../../assets/share.png')} style={{objectFit: 'contain',width: 25}}/>
-                      
-                    </TouchableOpacity>
-                </View>
-                <Text style={tw`py-2 text-[#86878B] text-center`}>{user?.bio}</Text>
+                            <Image source={require('../../assets/share.png')} style={{ objectFit: 'contain', width: 25 }} />
+
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={tw`py-2 text-[#86878B] text-center`}>{user?.bio}</Text>
                 </View>
             )
 
@@ -106,45 +106,49 @@ export default function ProfileHeader({ user:puser , change}) {
     }
     return (
         <>
-        <NavBarGeneral title={user?.displayName} rightButton={{ display: true, name: 'more-horizontal', color: 'white',action: null }}/>
-        <View style={styles.container}>
-            {
-                user?.photoURL ? 
-                <Image
-                    style={{height: 80, width: 80,borderRadius: 999999,objectFit: 'contain'}}
-                    source={{ uri: user?.photoURL }} 
-                />
-                : <Avatar.Icon size={80} backgroundColor={COLORS.secondary} icon={"account"}/>
-            }
-            <Text style={styles.emailText}>@{user?.username}</Text>
-            <View style={styles.counterContainer}>
-                <View style={styles.counterItemContainer}>
-                    <Text style={styles.counterNumberText}>{user?.followingCount}</Text>
-                    <Text style={styles.counterLabelText}>Following</Text>
+            <NavBarGeneral title={user?.displayName} rightButton={{ display: true, name: 'more-horizontal', color: 'white', action: null }} />
+            <View style={styles.container}>
+                {
+                    user?.photoURL ?
+                        <Image
+                            style={{ height: 80, width: 80, borderRadius: 999999, objectFit: 'contain' }}
+                            source={{ uri: user?.photoURL }}
+                        />
+                        : <Avatar.Icon size={80} backgroundColor={COLORS.secondary} icon={"account"} />
+                }
+                <Text style={styles.emailText}>@{user?.username}</Text>
+                <View style={styles.counterContainer}>
+                    <View style={styles.counterItemContainer}>
+                        <Text style={styles.counterNumberText}>{user?.followingCount}</Text>
+                        <Text style={styles.counterLabelText}>Following</Text>
+                    </View>
+                    <View style={styles.counterItemContainer}>
+                        <Text style={styles.counterNumberText}>{user?.followersCount}</Text>
+                        <Text style={styles.counterLabelText}>Followers</Text>
+                    </View>
+                    <View style={styles.counterItemContainer}>
+                        <Text style={styles.counterNumberText}>0</Text>
+                        <Text style={styles.counterLabelText}>Likes</Text>
+                    </View>
                 </View>
-                <View style={styles.counterItemContainer}>
-                    <Text style={styles.counterNumberText}>{user?.followersCount}</Text>
-                    <Text style={styles.counterLabelText}>Followers</Text>
-                </View>
-                <View style={styles.counterItemContainer}>
-                    <Text style={styles.counterNumberText}>0</Text>
-                    <Text style={styles.counterLabelText}>Likes</Text>
-                </View>
-            </View>
-            {FIREBASE_AUTH.currentUser?.uid === user?.uid ?
-                <View>
-                    <TouchableOpacity
-                        style={buttonStyles.grayOutlinedButton}
-                        onPress={() => navigation.navigate('editProfile')}
+                {FIREBASE_AUTH.currentUser?.uid === user?.uid ?
+                    <View>
+                        <TouchableOpacity
+                            style={buttonStyles.grayOutlinedButton}
+                            onPress={() => navigation.navigate('editProfile')}
                         >
-                        <Text style={buttonStyles.grayOutlinedButtonText}>Edit Profile</Text>
-                    </TouchableOpacity>
-                    <Text style={tw`py-2 text-[#86878B] text-center`} onPress={() => navigation.navigate('editProfileField', { title: 'Bio', field: 'bio', value: user?.bio })}>Tap to add bio</Text>
-                </View>
-                :
-                renderFollowButton()
-            }
-        </View>
+                            <Text style={buttonStyles.grayOutlinedButtonText}>Edit Profile</Text>
+                        </TouchableOpacity>
+                        {user?.bio ?
+                            <Text style={tw`py-2 text-[#86878B] text-center`}>{user.bio}</Text>
+                            :
+                            <Text style={tw`py-2 text-[#86878B] text-center`} onPress={() => navigation.navigate('editProfileField', { title: 'Bio', field: 'bio', value: user?.bio })}>Tap to add bio</Text>
+                        }
+                    </View>
+                    :
+                    renderFollowButton()
+                }
+            </View>
         </>
     )
 }
