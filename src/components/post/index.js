@@ -61,6 +61,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
   const [mute, setMute] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
+  const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
 
   useImperativeHandle(parentRef, () => ({
     play,
@@ -181,9 +182,12 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
 
   const OpenComments = () => {
     console.log("opening...");
-    bottomSheetModalRef.current.open();
+    // bottomSheetModalRef.current.open();
+    setIsCommentModalVisible(!isCommentModalVisible);
   };
-
+  const closeModal = () => {
+    setIsCommentModalVisible(!isCommentModalVisible);
+  };
   const handleProfile = () => {
     stop();
     navigation.navigate("profile", { uid: user.uid });
@@ -443,10 +447,13 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
               </View>
             </>
           )}
-          <CommentModel
-            ref={(preventRef) => (bottomSheetModalRef.current = preventRef)}
-            post={item}
-          />
+          {isCommentModalVisible && (
+            <CommentModel
+              isVisible={isCommentModalVisible}
+              onClose={closeModal}
+              post={item}
+            />
+          )}
         </View>
       </TouchableWithoutFeedback>
       <View style={tw`flex-1 flex py-12 bg-black`}>

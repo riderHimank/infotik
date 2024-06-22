@@ -39,66 +39,12 @@ import {
   RegisterUserSuc,
 } from "../ActionType";
 
-// import * as GoogleAuthSession from 'expo-google-auth-session';
-
-// export const loginWithGoogle = (idToken) => async (dispatch) => {
-//     try {
-//       dispatch({
-//         type: LoginUserReq,
-//       });
-
-//       const credential = GoogleAuthProvider.credential(idToken);
-//       const userCredential = await signInWithCredential(FIREBASE_AUTH, credential);
-//       const user = userCredential.user;
-//       const docRef = doc(FIREBASE_DB, 'users', user.uid);
-//       const docSnap = await getDoc(docRef);
-
-//       if (docSnap.exists()) {
-//         // User exists, login successful
-//         const data = {
-//           user: docSnap.data(),
-//           message: "Login Successfully",
-//         };
-//         dispatch({
-//           type: LoginUserSuc,
-//           ...data,
-//         });
-//         return "L";
-//       } else {
-//         // User does not exist, create a new user
-//         const newUser = {
-//           uid: user.uid,
-//           email: user.email,
-//           displayName: user.displayName,
-//           photoURL: user.photoURL,
-//           createdAt: new Date(),
-//         };
-
-//         await setDoc(docRef, newUser);
-
-//         dispatch({
-//           type: LoginUserSuc,
-//           user: newUser,
-//           message: "Registration and Login Successful",
-//         });
-//         return "R";
-//       }
-
-//     } catch (error) {
-//       dispatch({
-//         type: LoginUserFai,
-//         message: "Google Login Failed",
-//       });
-//       console.log(error.message);
-//       return false;
-//     }
-//   };
-
 export const configureGoogleSignIn = () => {
   // GoogleSignin.configure({
   //   webClientId:
   //     "634179897850-5toavm1kcjormgh5ecn5e147hl3tgd2i.apps.googleusercontent.com",
-  //   scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+  //   scopes: [],
+  //   offlineAccess: true,
   // });
 };
 
@@ -107,11 +53,14 @@ export const configureGoogleSignIn = () => {
 //     dispatch({
 //       type: RegisterUserReq,
 //     });
-
+//     await GoogleSignin.hasPlayServices();
 //     const userInfo = await GoogleSignin.signIn();
 //     // console.log("User info:", userInfo);
-//     const { idToken } = userInfo;
-//     const googleCredential = GoogleAuthProvider.credential(idToken);
+//     const { idToken, accessToken } = userInfo;
+//     const googleCredential = GoogleAuthProvider.credential(
+//       idToken,
+//       accessToken
+//     );
 //     const userCredential = await signInWithCredential(
 //       FIREBASE_AUTH,
 //       googleCredential
@@ -201,27 +150,6 @@ export const login = (email, password) => async (dispatch) => {
     return false;
   }
 };
-
-// async function signInWithGoogleAsync() {
-//     try {
-//       const { type, user } = await Google.logInAsync({
-//         androidClientId: 'YOUR_ANDROID_CLIENT_ID',
-//         iosClientId: 'YOUR_IOS_CLIENT_ID',
-//         scopes: ['profile', 'email'],
-//       });
-
-//       if (type === 'success') {
-//         // You can use user.accessToken to authenticate with Firebase
-//         const credential = firebase.auth.GoogleAuthProvider.credential(null, user.accessToken);
-//         await firebase.auth().signInWithCredential(credential);
-//         console.log('Successfully logged in!', user);
-//       } else {
-//         console.log('Google Sign-In canceled or failed');
-//       }
-//     } catch (e) {
-//       console.error('Error with Google Sign-In', e.message);
-//     }
-//   }
 
 export const register =
   (email, password, name, username) => async (dispatch) => {

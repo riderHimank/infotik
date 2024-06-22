@@ -1,11 +1,11 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import tw from '../customtwrnc'
-import { COLORS } from '../constants'
-import { LinearGradient } from 'expo-linear-gradient';
-import Button from '../components/Button';
-import { saveKeyword } from '../redux/actions/user';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import Button from '../components/Button';
+import { COLORS } from '../constants';
+import tw from '../customtwrnc';
+import { saveKeyword } from '../redux/actions/user';
 
 // const GradientText = ({ children, selected, onPress }) => {
 //   return (
@@ -29,22 +29,22 @@ export const GradientText = ({ children, selected, onPress }) => {
           <TouchableOpacity onPress={onPress}>
             <View
 
-              style={tw`p-1 px-3 rounded-2xl flex items-center border border-[${COLORS.secondary}]`}
+              style={tw`p-1 px-2 rounded-2xl flex items-center border border-[${COLORS.secondary}]`}
 
             >
-              <Text style={tw`text-white text-sm font-montserrat text-[${COLORS.secondary}]`}>{children}</Text>
+              <Text style={tw`text-white text-base font-bold text-[${COLORS.secondary}]`}>{children}</Text>
             </View>
           </TouchableOpacity>
         ) :
           (
             <TouchableOpacity onPress={onPress}>
-              <LinearGradient
+              {/* <LinearGradient
                 colors={['#53C8D8', '#668AF7']}
                 style={tw`p-1 px-3 rounded-3xl flex items-center `}
 
-              >
-                <Text style={tw`text-white text-sm font-montserrat`}>{children}</Text>
-              </LinearGradient>
+              > */}
+              <Text style={tw`p-1 px-2 border rounded-2xl items-center flex text-black bg-[${COLORS.keywordColor}]  text-base font-bold`}>{children}</Text>
+              {/* </LinearGradient> */}
             </TouchableOpacity>
           )
       }
@@ -66,11 +66,11 @@ const allKeyword = [
   '#AI',
   '#Business',
   '#Finance',
-  '#Travel',
+  '#Medicine',
   '#Culture',
   '#Art',
   '#Fashion',
-  '#Food',
+  '#Robotics',
   '#Cooking',
   '#DIY',
   '#Fitness',
@@ -101,6 +101,11 @@ const Keyword = () => {
   }
   const navigation = useNavigation();
   const handleNext = async () => {
+    if (keyword.length < 5) {
+      alert('Please select at least 5 keywords.');
+      return;
+    }
+
     const res = await saveKeyword(keyword);
     if (res) {
       navigation.reset({
