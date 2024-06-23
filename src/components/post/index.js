@@ -456,7 +456,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
           )}
         </View>
       </TouchableWithoutFeedback>
-      <View style={tw`flex-1 flex py-12 bg-black`}>
+      <View style={tw`flex-1 flex py-2 bg-black`}>
         <Video
           ref={video}
           style={styles.container}

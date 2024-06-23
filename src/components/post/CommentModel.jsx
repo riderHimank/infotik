@@ -138,7 +138,7 @@ const CommentModel = (({ post, isVisible, onClose }) => {
                           <View key={index} style={tw`w-full  px-3`}>
                             <View style={tw`flex flex-row items-center mb-10 gap-3`}>
                               {user?.photoURL ? (
-                                <Image source={{ uri: user?.photoURL }} style={tw`w-36 h-36 rounded-full`} />
+                                <Image source={{ uri: user?.photoURL }} style={tw`w-9 h-9 rounded-full`} />
                               ) : (
                                 <Avatar.Icon size={36} icon={"account"} />
                               )}

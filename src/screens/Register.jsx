@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { Dimensions, Image, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, SafeAreaView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import FbLogo from '../../assets/fb-icon.png';
 import GoogleLogo from '../../assets/google_icon.png';
@@ -10,7 +10,7 @@ import Input from '../components/Input';
 import SocialButton from '../components/SocialButton';
 import { COLORS } from '../constants';
 import tw from '../customtwrnc';
-import { configureGoogleSignIn, getUsername, GoogleSignUp, register } from '../redux/actions/user';
+import { configureGoogleSignIn, getUsername, GoogleSignUp, register, saveUserField } from '../redux/actions/user';
 
 
 const Register = () => {
@@ -25,6 +25,8 @@ const Register = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [showForm, setShowForm] = useState(false);
+    const [isUsernameSet, setIsUsernameSet] = useState(true);
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: showForm,
@@ -54,13 +56,28 @@ const Register = () => {
                     routes: [{ name: 'home' }],
                 });
             } else if (res) {
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'keyword' }],
-                });
+                setIsUsernameSet(false);
             }
         } catch (error) {
             ToastAndroid.show('Google sign in failed.', ToastAndroid.SHORT);
+        }
+    }
+
+    const handleSetUsername = async () => {
+        if (!username) {
+            ToastAndroid.show('Please enter a username.', ToastAndroid.SHORT);
+            return;
+        }
+
+        const success = await dispatch(saveUserField("username", username));
+        if (success) {
+            setIsUsernameSet(true); // Username is set, now navigate to the keyword screen
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'keyword' }],
+            });
+        } else {
+            ToastAndroid.show('Username already taken.', ToastAndroid.SHORT);
         }
     }
 
@@ -99,12 +116,27 @@ const Register = () => {
 
 
     return (
-        <View style={tw`flex-1 bg-[${COLORS.primary}] flex justify-start items-center`}>
-            <View style={tw` w-[18rem] mt-10 rounded-md`}>
-                <View style={tw`flex items-center mt-10 `}>
-                    <Image resizeMode='contain' source={require('../../assets/bented.png')} style={{ width: windowWidth * 0.7, height: windowHeight * 0.3, marginBottom: 2 }} />
+        <SafeAreaView style={tw`flex-1 bg-[${COLORS.primary}] flex justify-start items-center`}>
+            {!isUsernameSet && (
+                <View style={tw`w-full p-4 flex justify-center`}>
+                    <Text style={tw`text-white justify-center items-center text-xl mt-[50%]`}> Set your Username :</Text>
+                    <Input
+                        autoCapitalize='none'
+                        placeholder={"Enter Your username"}
+                        value={username}
+                        setValue={setUsername}
+                    />
+                    {error && <Text style={tw`text-xs text-red-400 px-2 font-montserrat`}>{error}</Text>}
+                    <View style={tw`items-center`}>
+                        <Button onPress={handleSetUsername}>Set Username</Button>
+                    </View>
                 </View>
-                <View style={tw`mt-10`}>
+            )}
+            {isUsernameSet && <View style={tw` w-[18rem] mt-10 rounded-md`}>
+                <View style={tw`flex items-center mt-10 `}>
+                    <Image resizeMode='contain' source={require('../../assets/bented.png')} style={{ width: windowWidth * (showForm ? 0.6 : 0.7), height: windowHeight * (showForm ? 0.2 : 0.3), marginBottom: 2 }} />
+                </View>
+                <View style={tw`mt-5`}>
                     {showForm ? (
                         <View style={tw` mb-8`} >
                             <Input placeholder={"Enter Your name"} value={name} setValue={setName} />
@@ -150,8 +182,8 @@ const Register = () => {
                         </>
                     )}
                 </View>
-            </View>
-        </View>
+            </View>}
+        </SafeAreaView>
     )
 }
 
