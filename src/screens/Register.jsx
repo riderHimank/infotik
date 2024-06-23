@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { Dimensions, Image, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, SafeAreaView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import FbLogo from '../../assets/fb-icon.png';
 import GoogleLogo from '../../assets/google_icon.png';
@@ -116,7 +116,7 @@ const Register = () => {
 
 
     return (
-        <View style={tw`flex-1 bg-[${COLORS.primary}] flex justify-start items-center`}>
+        <SafeAreaView style={tw`flex-1 bg-[${COLORS.primary}] flex justify-start items-center`}>
             {!isUsernameSet && (
                 <View style={tw`w-full p-4 flex justify-center`}>
                     <Text style={tw`text-white justify-center items-center text-xl mt-[50%]`}> Set your Username :</Text>
@@ -134,9 +134,9 @@ const Register = () => {
             )}
             {isUsernameSet && <View style={tw` w-[18rem] mt-10 rounded-md`}>
                 <View style={tw`flex items-center mt-10 `}>
-                    <Image resizeMode='contain' source={require('../../assets/bented.png')} style={{ width: windowWidth * 0.7, height: windowHeight * 0.3, marginBottom: 2 }} />
+                    <Image resizeMode='contain' source={require('../../assets/bented.png')} style={{ width: windowWidth * (showForm ? 0.6 : 0.7), height: windowHeight * (showForm ? 0.2 : 0.3), marginBottom: 2 }} />
                 </View>
-                <View style={tw`mt-10`}>
+                <View style={tw`mt-5`}>
                     {showForm ? (
                         <View style={tw` mb-8`} >
                             <Input placeholder={"Enter Your name"} value={name} setValue={setName} />
@@ -183,7 +183,7 @@ const Register = () => {
                     )}
                 </View>
             </View>}
-        </View>
+        </SafeAreaView>
     )
 }
 
