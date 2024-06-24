@@ -11,6 +11,7 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -377,7 +378,8 @@ export const saveUserField = (name, value) => async (dispatch) => {
 export const getPost = () => async (dispatch) => {
   try {
     const q = query(
-      collection(FIREBASE_DB, "post")
+      collection(FIREBASE_DB, "post"),
+      orderBy("creation", "desc")
       // where("approved", "==", true)
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
