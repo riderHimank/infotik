@@ -11,6 +11,7 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -377,7 +378,8 @@ export const saveUserField = (name, value) => async (dispatch) => {
 export const getPost = () => async (dispatch) => {
   try {
     const q = query(
-      collection(FIREBASE_DB, "post")
+      collection(FIREBASE_DB, "post"),
+      orderBy("creation", "desc")
       // where("approved", "==", true)
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -674,6 +676,26 @@ export const getPostByKeywords = async (keywords) => {
     return postData;
   } catch (error) {
     console.log(error.message, "error");
+    return [];
+  }
+};
+
+export const getCurrentUserKeywords = async () => {
+  try {
+    const user = FIREBASE_AUTH.currentUser;
+    if (!user) throw new Error("No user logged in");
+
+    const ref = doc(collection(FIREBASE_DB, "user"), user.uid);
+    const docSnap = await getDoc(ref);
+
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      return userData.keywords || [];
+    } else {
+      throw new Error("User document does not exist");
+    }
+  } catch (error) {
+    console.error("Error getting current user keywords:", error.message);
     return [];
   }
 };
