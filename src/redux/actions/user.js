@@ -677,3 +677,23 @@ export const getPostByKeywords = async (keywords) => {
     return [];
   }
 };
+
+export const getCurrentUserKeywords = async () => {
+  try {
+    const user = FIREBASE_AUTH.currentUser;
+    if (!user) throw new Error("No user logged in");
+
+    const ref = doc(collection(FIREBASE_DB, "user"), user.uid);
+    const docSnap = await getDoc(ref);
+
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      return userData.keywords || [];
+    } else {
+      throw new Error("User document does not exist");
+    }
+  } catch (error) {
+    console.error("Error getting current user keywords:", error.message);
+    return [];
+  }
+};
