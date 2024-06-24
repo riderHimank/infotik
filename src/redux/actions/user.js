@@ -699,3 +699,28 @@ export const getCurrentUserKeywords = async () => {
     return [];
   }
 };
+
+export const getTotalLikesForUser = async (userId) => {
+  try {
+    // Reference to the 'post' collection
+    const postsRef = collection(FIREBASE_DB, "post");
+
+    // Create a query against the collection for posts created by the user
+    const q = query(postsRef, where("creator", "==", userId));
+
+    // Execute the query
+    const querySnapshot = await getDocs(q);
+
+    // Accumulate likes from each post
+    let totalLikes = 0;
+    querySnapshot.forEach((doc) => {
+      totalLikes += doc.data().likesCount;
+    });
+
+    // Return the total likes
+    return totalLikes;
+  } catch (error) {
+    console.error("Error getting total likes for user:", error);
+    return 0; // Return 0 in case of error
+  }
+};
