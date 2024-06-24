@@ -10,7 +10,7 @@ import { FIREBASE_AUTH } from '../../firebaseConfig'
 // import { useFollowingMutation } from '../../../hooks/useFollowingMutation'
 import tw from '../customtwrnc'
 import { COLORS } from '../constants'
-import { checkFollow, followUser } from '../redux/actions/user'
+import { checkFollow, followUser, getTotalLikesForUser } from '../redux/actions/user'
 import NavBarGeneral from './general/navbar'
 
 
@@ -18,10 +18,10 @@ import NavBarGeneral from './general/navbar'
 export default function ProfileHeader({ user: puser, change }) {
     const navigation = useNavigation()
     const [user, setUser] = useState();
-
+    const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    const [totalLikes, setTotalLikes] = useState(0);
 
 
 
@@ -37,6 +37,21 @@ export default function ProfileHeader({ user: puser, change }) {
             }
         })()
     }, [user])
+
+    useEffect(() => {
+        const fetchTotalLikes = async () => {
+            const likes = await getTotalLikesForUser(user?.uid);
+            setTotalLikes(likes);
+            // console.log('likes', likes);
+            // console.log('UserId:', user?.uid);
+            // console.log('User:', user);
+
+        };
+
+        if (user?.uid) {
+            fetchTotalLikes();
+        }
+    }, [user?.uid]);
 
 
     const handleFollow = async () => {
@@ -109,10 +124,11 @@ export default function ProfileHeader({ user: puser, change }) {
             <NavBarGeneral title={user?.displayName} rightButton={{ display: true, name: 'more-horizontal', color: 'white', action: null }} />
             <View style={styles.container}>
                 {
-                    user?.photoURL ?
+                    user?.photoURL && !imageFailedToLoad ?
                         <Image
                             style={{ height: 80, width: 80, borderRadius: 999999, objectFit: 'contain' }}
                             source={{ uri: user?.photoURL }}
+                            onError={() => setImageFailedToLoad(true)}
                         />
                         : <Avatar.Icon size={80} backgroundColor={COLORS.secondary} icon={"account"} />
                 }
@@ -127,7 +143,7 @@ export default function ProfileHeader({ user: puser, change }) {
                         <Text style={styles.counterLabelText}>Followers</Text>
                     </View>
                     <View style={styles.counterItemContainer}>
-                        <Text style={styles.counterNumberText}>0</Text>
+                        <Text style={styles.counterNumberText}>{totalLikes}</Text>
                         <Text style={styles.counterLabelText}>Likes</Text>
                     </View>
                 </View>
