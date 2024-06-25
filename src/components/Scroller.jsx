@@ -75,7 +75,7 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
         return (
             <View style={{ height: feedItemHeight, backgroundColor: 'black' }}>
                 <PostSingle followedUsers={followedUsers}
-                    setFollowedUsers={setFollowedUsers} item={item} key={index} ref={ref => (mediaRefs.current[item.id] = ref)} />
+                    setFollowedUsers={setFollowedUsers} item={item} key={item.id} ref={ref => (mediaRefs.current[item.id] = ref)} />
             </View>
         );
     };
@@ -87,11 +87,9 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
     return (
         <FlatList
             windowSize={4}
+            height={feedItemHeight}
             data={posts}
             initialScrollIndex={currentIndex}
-            getItemLayout={(data, index) => (
-                { length: feedItemHeight, offset: feedItemHeight * index, index }
-            )}
             renderItem={renderItem}
             initialNumToRender={1}
             maxToRenderPerBatch={2}
@@ -104,7 +102,7 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
             onViewableItemsChanged={onViewableItemsChanged.current} /*
             to fix the audio leak bug
             */
-            keyExtractor={item => item.id || String(item.index)}
+            keyExtractor={item => item.id}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
             onEndReached={handleEndReach}

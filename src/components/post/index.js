@@ -456,24 +456,23 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
           )}
         </View>
       </TouchableWithoutFeedback>
-      <View style={tw`flex-1 flex py-2 bg-black`}>
-        <Video
-          ref={video}
-          style={styles.container}
-          source={{
-            uri: item.media[0],
-          }}
-          useNativeControls={false}
-          resizeMode={ResizeMode.COVER}
-          shouldPlay={false}
-          isLooping
-          usePoster
-          onLoadStart={handleLoadStart}
-          posterSource={{ uri: item.media[1] }}
-          posterStyle={{ resizeMode: "cover", height: "100%" }}
-          onReadyForDisplay={handleReadyForDisplay}
-        />
-      </View>
+
+      <Video
+        ref={video}
+        style={styles.container}
+        source={{
+          uri: item.media[0],
+        }}
+        useNativeControls={false}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay={false}
+        isLooping
+        usePoster
+        onLoadStart={handleLoadStart}
+        posterSource={{ uri: item.media[1] }}
+        posterStyle={{ resizeMode: "cover", height: "100%" }}
+        onReadyForDisplay={handleReadyForDisplay}
+      />
     </>
   );
 });
