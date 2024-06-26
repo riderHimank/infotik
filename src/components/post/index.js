@@ -429,12 +429,16 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                     isFollowing ? `bg-transparent text-white` : ""
                   }`}
                   onPress={handleFollow}
+                  disabled={loading}
                 >
                   <Text
                     style={tw`text-white text-base font-semibold font-montserrat `}
                   >
                     {isFollowing ? "Unfollow" : "Follow"}
                   </Text>
+                  {loading && (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  )}
                 </TouchableOpacity>
               </View>
               {/* hashtags */}

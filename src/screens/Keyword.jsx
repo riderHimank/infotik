@@ -84,6 +84,7 @@ const allKeyword = [
 
 const Keyword = () => {
   const [keyword, setKeyword] = useState([]);
+  const [loading, setloading] = useState(false);
 
   const handleSelect = (k) => {
     setKeyword(prev => {
@@ -105,8 +106,9 @@ const Keyword = () => {
       alert('Please select at least 5 keywords.');
       return;
     }
-
+    setloading(true);
     const res = await saveKeyword(keyword);
+    setloading(false);
     if (res) {
       navigation.reset({
         index: 0,
@@ -142,7 +144,7 @@ const Keyword = () => {
       </View>
 
       <View style={tw`p-4 px-8 items-center`}>
-        <Button onPress={handleNext}>NEXT</Button>
+        <Button loading={loading} disabled={loading} onPress={handleNext}>NEXT</Button>
       </View>
     </ScrollView>
   )

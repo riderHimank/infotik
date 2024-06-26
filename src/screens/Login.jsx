@@ -11,7 +11,7 @@ import { login } from '../redux/actions/user';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [loading, setloading] = useState(false);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { isAuth } = useSelector(store => store.user);
@@ -24,13 +24,20 @@ const Login = () => {
       ToastAndroid.show('Please enter email and password.', ToastAndroid.SHORT);
       return
     }
+    setloading(true);
 
     const res = await dispatch(login(email, password));
+    setloading(false);
     if (res) {
       navigation.reset({
         index: 0,
         routes: [{ name: 'home' }],
       });
+    }
+    else {
+      setloading(false);
+      ToastAndroid.show('Incorrect email or password', ToastAndroid.SHORT);
+
     }
   }
   const windowWidth = Dimensions.get('window').width;
@@ -61,7 +68,7 @@ const Login = () => {
               </TouchableOpacity>
             </View>
             <View style={tw`items-center mt-1`}>
-              <Button onPress={handleLogin} >SIGN IN</Button>
+              <Button disabled={loading} loading={loading} onPress={handleLogin} >SIGN IN</Button>
             </View>
           </View>
         </View>
