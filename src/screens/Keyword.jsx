@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Button from '../components/Button';
 import { COLORS } from '../constants';
 import tw from '../customtwrnc';
@@ -115,7 +115,7 @@ const Keyword = () => {
     }
   }
   return (
-    <View style={tw`flex-1 bg-[${COLORS.primary}] py-4`}>
+    <ScrollView style={tw`flex-1 bg-[${COLORS.primary}] py-4`}>
       <View style={tw`flex items-center`}>
         <Image source={require('../../assets/fulllogo.png')} style={{ width: 80, height: 80, resizeMode: 'contain', marginBottom: 2 }} />
       </View>
@@ -144,7 +144,7 @@ const Keyword = () => {
       <View style={tw`p-4 px-8 items-center`}>
         <Button onPress={handleNext}>NEXT</Button>
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
