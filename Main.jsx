@@ -11,6 +11,7 @@ import Keyword from './src/screens/Keyword'
 import Profile from './src/screens/Profile'
 import SavePostScreen from './src/screens/SavePost'
 import Splash from './src/screens/Splash'
+import Chat from "./src/screens/[chatId]"
 import { userPosts } from './src/screens/userPosts'
 
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,7 @@ const main = () => {
         <Stack.Screen name="editProfile" component={EditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="userPosts" component={userPosts} options={{ headerShown: false }} />
         <Stack.Screen name="editProfileField" component={EditProfileFieldScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="chat" component={Chat} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import NavBarGeneral from '../components/general/navbar'
 import { COLORS } from '../constants'
 import { saveUserField } from '../redux/actions/user'
-import {useDispatch} from 'react-redux'
+import { useDispatch } from 'react-redux'
 // import { saveUserField } from '../../../../services/user'
 
 
