@@ -29,6 +29,15 @@ const Chat = () => {
     const fetchMessages = async () => {
         try {
             // const Snapshot = await getDocs(col);
+            const col = collection(FIREBASE_DB, `chats/${route.params.chatId}/messages`);
+            const q = query(col, orderBy('createdAt', 'desc'));
+            onSnapshot(q, (Snapshot) => {
+                let data = [];
+                Snapshot.docs.forEach(doc => {
+                    data.push(doc.data());
+                })
+                setMessages(data);
+            })
         } catch (e) {
             console.log(e);
         }
@@ -50,17 +59,8 @@ const Chat = () => {
         //     },
         // ])
         getChatDetails()
-        // fetchMessages();
-        const col = collection(FIREBASE_DB, `chats/${route.params.chatId}/messages`, orderBy('createdAt', 'desc'));
-        const uns = onSnapshot(col, (Snapshot) => {
-            const data = Snapshot.docs.forEach(doc => {
-                return doc.data();
-            })
-            setMessages(data);
-            // setMessages(previousMessages =>
-            //     GiftedChat.append(previousMessages, data));
-        })
-        return () => uns();
+        fetchMessages();
+
     }, []);
 
 
@@ -76,7 +76,7 @@ const Chat = () => {
         // console.log(msgModel);
         const c = collection(FIREBASE_DB, `chats/${route.params.chatId}/messages`);
         addDoc(c, msgModel).then(() => {
-            setMessages(prev => GiftedChat.append(prev, msgModel));
+            GiftedChat.append(msgModel, messages);
         }).catch((e) => {
             console.log(e);
         })
