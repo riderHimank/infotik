@@ -13,6 +13,7 @@ import Profile from './Profile';
 import { FIREBASE_AUTH } from '../../firebaseConfig';
 import MyProfile from './MyProfile';
 import Discover from './Discover';
+import ChatScreen from './ChatScreen';
 
 
 
@@ -79,7 +80,7 @@ const Home = () => {
       />
       <Tab.Screen
         name="inbox"
-        component={Keyword}
+        component={ChatScreen}
         options={{
           tabBarIcon: ({ color }) => (
             <CustomTabBarIcon name="message-square" color={color} label={'Inbox'} />

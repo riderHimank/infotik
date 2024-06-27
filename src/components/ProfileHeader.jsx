@@ -148,19 +148,28 @@ export default function ProfileHeader({ user: puser, change }) {
                     </View>
                 </View>
                 {FIREBASE_AUTH.currentUser?.uid === user?.uid ?
-                    <View>
-                        <TouchableOpacity
-                            style={buttonStyles.grayOutlinedButton}
-                            onPress={() => navigation.navigate('editProfile')}
-                        >
-                            <Text style={buttonStyles.grayOutlinedButtonText}>Edit Profile</Text>
-                        </TouchableOpacity>
+                    <>
+                        <View style={tw`flex flex-row gap-2`}>
+                            <TouchableOpacity
+                                style={buttonStyles.grayOutlinedButton}
+                                onPress={() => navigation.navigate('editProfile')}
+                            >
+                                <Text style={buttonStyles.grayOutlinedButtonText}>Edit Profile</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={buttonStyles.grayOutlinedButton}
+                                onPress={() => navigation.navigate('keyword')}
+                            >
+                                <Text style={buttonStyles.grayOutlinedButtonText}>Edit Keywords</Text>
+                            </TouchableOpacity>
+                        </View>
                         {user?.bio ?
                             <Text style={tw`py-2 text-[#86878B] text-center`}>{user.bio}</Text>
                             :
                             <Text style={tw`py-2 text-[#86878B] text-center`} onPress={() => navigation.navigate('editProfileField', { title: 'Bio', field: 'bio', value: user?.bio })}>Tap to add bio</Text>
                         }
-                    </View>
+                    </>
+
                     :
                     renderFollowButton()
                 }
