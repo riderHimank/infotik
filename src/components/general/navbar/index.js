@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Touchable,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
-import styles from "./styles";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import {
+  Dimensions,
+  Linking,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../../../constants";
 import tw from "../../../customtwrnc";
-import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../redux/actions/user";
-import { TouchableWithoutFeedback } from "react-native";
+import styles from "./styles";
 const window = Dimensions.get("window");
 
 export default function NavBarGeneral(
@@ -38,6 +38,14 @@ export default function NavBarGeneral(
 
   const handleOpen = () => {
     dispatch({ type: "setOpen", open: true });
+  };
+
+  const handleLinkOpen = (link) => {
+    try {
+      Linking.openURL(link);
+    } catch {
+      ToastAndroid.show("Error opening link", ToastAndroid.SHORT);
+    }
   };
   return (
     <View style={styles.container}>
@@ -68,12 +76,26 @@ export default function NavBarGeneral(
       </TouchableOpacity>
 
       <View
-        style={tw`w-[100px] p-2 bg-white absolute top-10 z-10 right-3 items-center rounded-md flex gap-2 ${
+        style={tw`w-[120px] p-2 bg-white absolute top-10 z-10 right-0 justify-center items-center rounded-md flex flex-col gap-2 ${
           open ? "" : "hidden"
         }`}
       >
+        <TouchableOpacity
+          onPress={() => handleLinkOpen("https://www.infotik.co/privacy")}
+        >
+          <Text style={tw` text-lg`}>Privacy</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleLinkOpen("https://www.infotik.co/guidelines")}
+        >
+          <Text style={tw`text-lg`}>Guidelines</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleLogout}>
-          <Text style={tw`text-red-600 text-lg`}>Logout</Text>
+          <Text
+            style={tw` text-lg bg-red-500 px-4 border rounded-full hover:text-black`}
+          >
+            Logout
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
