@@ -10,6 +10,7 @@ import { COLORS } from '../constants'
 import tw from '../customtwrnc'
 import { getPostByKeywords, getUserByQuery } from '../redux/actions/user'
 import { GradientText } from './Keyword'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const allKeyword = [
     '#News',
@@ -93,7 +94,7 @@ const Discover = () => {
     }
 
     return (
-        <View style={tw`flex-1 bg-[${COLORS.primary}] py-2 px-4`}>
+        <SafeAreaView style={tw`flex-1 bg-[${COLORS.primary}] px-4`}>
             <Text style={tw`text-white text-center text-xl`}>Discover</Text>
             <View style={tw`flex flex-row items-center gap-2 p-2 bg-black rounded-md mt-4`}>
                 <Feather name="search" size={24} color={'white'} />
@@ -188,7 +189,7 @@ const Discover = () => {
                         </ScrollView>
                     )
             }
-        </View>
+        </SafeAreaView>
     )
 }
 

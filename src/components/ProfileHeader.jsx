@@ -12,6 +12,7 @@ import tw from '../customtwrnc'
 import { COLORS } from '../constants'
 import { checkFollow, followUser, getTotalLikesForUser } from '../redux/actions/user'
 import NavBarGeneral from './general/navbar'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 
@@ -120,7 +121,7 @@ export default function ProfileHeader({ user: puser, change }) {
         }
     }
     return (
-        <>
+        <SafeAreaView>
             <NavBarGeneral title={user?.displayName} rightButton={{ display: true, name: 'more-horizontal', color: 'white', action: null }} />
             <View style={styles.container}>
                 {
@@ -174,7 +175,7 @@ export default function ProfileHeader({ user: puser, change }) {
                     renderFollowButton()
                 }
             </View>
-        </>
+        </SafeAreaView>
     )
 }
 

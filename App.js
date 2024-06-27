@@ -11,6 +11,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { StatusBar as RNStatusBar } from "react-native"; // Importing StatusBar from react-native
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
@@ -26,15 +27,15 @@ export default function App() {
   if (!fontsLoaded && !fontError) {
     return null;
   }
+  const dynamicTopMargin =
+    Platform.OS === "android" ? RNStatusBar.currentHeight : 0;
 
   return (
     <>
       <Provider store={store}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <MessageProvider>
-            <SafeAreaProvider
-              style={tw`${Platform.OS == "android" ? "mt-4" : ""}`}
-            >
+            <SafeAreaProvider style={tw`mt-${dynamicTopMargin}px`}>
               <StatusBar style="light" backgroundColor={COLORS.primary} />
               <Main />
             </SafeAreaProvider>
