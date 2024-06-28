@@ -2,7 +2,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOp
 import React, { useEffect, useState } from 'react'
 import { COLORS } from '../constants'
 import tw from '../customtwrnc'
-import { addDoc, collection, getDocs, onSnapshot, or, query, where } from 'firebase/firestore'
+import { addDoc, collection, doc, documentId, getDocs, onSnapshot, or, query, setDoc, where } from 'firebase/firestore'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebaseConfig'
 import { Touchable } from 'react-native'
 import { useNavigation } from '@react-navigation/core'
@@ -18,28 +18,29 @@ const Inbox = () => {
         try {
             const q = query(collection(FIREBASE_DB, 'chats'), or(where("user1", "==", currentUser.uid), where("user2", "==", currentUser.uid)));
             let data = [];
-            onSnapshot(collection(FIREBASE_DB, 'chats'), Snap => {
-                Snap.docs.forEach((doc) => {
-                    data.push(doc.data());
-                })
-            })
+            // onSnapshot(collection(FIREBASE_DB, 'chats'), Snap => {
+            // })
             const d = await (getDocs(q));
+            d.forEach((doc) => {
+                data.push(doc.data());
+            })
             setChats(data);
         } catch (e) {
             console.log(e);
         }
     }
-    useEffect(() => {
-        fetchChats();
-    }, [])
 
     const [searchId, setSearchId] = useState("");
     const [search, setSearch] = useState(false);
     const [isSearching, setSearching] = useState(false);
     const [searchUser, setSearchUser] = useState(null);
+    const [re, setRe] = useState(false);
 
     const bot = search ? 60 : 10;
     const tb = searchUser ? "Chat" : "Search";
+    useEffect(() => {
+        fetchChats();
+    }, [re])
 
     const handleSearch = async () => {
         setSearching(true);
@@ -56,18 +57,28 @@ const Inbox = () => {
             }
         } else {
             const col = collection(FIREBASE_DB, 'chats');
-            const newChat = await addDoc(col, {
-                user1: currentUser.uid,
-                user2: searchId,
-            });
-            // console.log(newChat.id);
-            setSearching(false);
-            setSearchId("");
-            navigation.navigate('chat', { chatId: newChat.id })
+            try {
+                const newChat = await addDoc(col, {
+                    user1: currentUser.uid,
+                    user2: searchId,
+                });
+                // console.log(newChat.id);
+                setSearching(false);
+                setSearchId("");
+                await setDoc(doc(col, newChat.id), {
+                    chatId: newChat.id,
+                }, {
+                    merge: true,
+                })
+                setRe(!re);
+                navigation.navigate('chat', { chatId: newChat.id })
+            } catch (e) {
+                setSearching(false);
+                setSearchId("");
+                console.log(e);
+            }
         }
     }
-
-
     return (
         <>
             <ScrollView style={tw`flex-1 bg-[${COLORS.primary}] py-4`}>
