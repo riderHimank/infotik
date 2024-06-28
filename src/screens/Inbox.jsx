@@ -2,7 +2,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOp
 import React, { useEffect, useState } from 'react'
 import { COLORS } from '../constants'
 import tw from '../customtwrnc'
-import { addDoc, collection, doc, documentId, getDocs, onSnapshot, or, query, setDoc, where } from 'firebase/firestore'
+import { addDoc, and, collection, doc, documentId, getDoc, getDocs, onSnapshot, or, query, setDoc, where } from 'firebase/firestore'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebaseConfig'
 import { Touchable } from 'react-native'
 import { useNavigation } from '@react-navigation/core'
@@ -10,13 +10,23 @@ import { getUserById } from '../redux/actions/user'
 
 const Inbox = () => {
 
-    const currentUser = FIREBASE_AUTH.currentUser;
+    const [currentUser, setCurrentUser] = useState(null);
     const [chats, setChats] = useState([]);
     const navigation = useNavigation();
 
+    const fetchCurrent = async () => {
+        try {
+            const cur = await getUserById(FIREBASE_AUTH.currentUser.uid);
+            setCurrentUser(cur);
+        } catch (e) {
+            console.log(e);
+        }
+
+    }
+
     const fetchChats = async () => {
         try {
-            const q = query(collection(FIREBASE_DB, 'chats'), or(where("user1", "==", currentUser.uid), where("user2", "==", currentUser.uid)));
+            const q = query(collection(FIREBASE_DB, 'chats'), or(where("user1", "==", FIREBASE_AUTH.currentUser.uid), where("user2", "==", FIREBASE_AUTH.currentUser.uid)));
             let data = [];
             // onSnapshot(collection(FIREBASE_DB, 'chats'), Snap => {
             // })
@@ -39,8 +49,11 @@ const Inbox = () => {
     const bot = search ? 60 : 10;
     const tb = searchUser ? "Chat" : "Search";
     useEffect(() => {
+        fetchCurrent();
         fetchChats();
     }, [re])
+
+    // console.log(FIREBASE_AUTH.currentUser.uid);
 
     const handleSearch = async () => {
         setSearching(true);
@@ -58,20 +71,36 @@ const Inbox = () => {
         } else {
             const col = collection(FIREBASE_DB, 'chats');
             try {
-                const newChat = await addDoc(col, {
-                    user1: currentUser.uid,
-                    user2: searchId,
-                });
-                // console.log(newChat.id);
-                setSearching(false);
-                setSearchId("");
-                await setDoc(doc(col, newChat.id), {
-                    chatId: newChat.id,
-                }, {
-                    merge: true,
-                })
-                setRe(!re);
-                navigation.navigate('chat', { chatId: newChat.id })
+                const q = query(collection(FIREBASE_DB, 'chats'), or(
+                    and(where("user1", "==", currentUser.uid), where("user2", "==", searchId)),
+                    and(where("user2", "==", currentUser.uid), where("user1", "==", searchId))));
+                const res = await getDocs(q);
+                if (!(res.docs.length > 0)) {
+                    const newChat = await addDoc(col, {
+                        user1: currentUser.uid,
+                        user1Pic: currentUser.photoURL,
+                        user1username: currentUser.username,
+                        user2: searchId,
+                        user2Pic: searchUser.photoURL,
+                        user2username: searchUser.username,
+                    });
+                    // console.log(newChat.id);
+                    setSearching(false);
+                    setSearchId("");
+                    await setDoc(doc(col, newChat.id), {
+                        chatId: newChat.id,
+                    }, {
+                        merge: true,
+                    })
+                    navigation.navigate('chat', { chatId: newChat.id })
+                    setRe(!re);
+                }
+                else {
+                    setSearching(false);
+                    setSearchId("");
+                    setRe(!re);
+                    navigation.navigate('chat', { chatId: res.docs[0].id })
+                }
             } catch (e) {
                 setSearching(false);
                 setSearchId("");

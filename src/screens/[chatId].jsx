@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { GiftedChat } from 'react-native-gifted-chat'
-import { COLORS } from '../constants'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebaseConfig'
 import { useRoute } from '@react-navigation/core'
 import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore'
