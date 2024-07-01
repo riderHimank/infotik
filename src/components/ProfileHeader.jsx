@@ -78,7 +78,7 @@ export default function ProfileHeader({ user: puser, change }) {
                     <View style={{ flexDirection: 'row' }}>
                         <TouchableOpacity
                             style={buttonStyles.grayOutlinedButton}
-                            onPress={() => navigation.navigate('chatSingle', { contactId: user?.uid })}
+                            onPress={() => navigation.navigate('chatScreen')}
                         >
                             <Text style={buttonStyles.grayOutlinedButtonText}>Message</Text>
                         </TouchableOpacity>
