@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Alert, Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import tw from '../customtwrnc'
-import { COLORS } from '../constants'
-import { EvilIcons, Feather } from '@expo/vector-icons'
-import { ScrollView } from 'react-native-gesture-handler'
+import { EvilIcons, Feather, MaterialIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/core'
-import { getUserById, getUserByQuery } from '../redux/actions/user'
 import { addDoc, and, collection, doc, getDocs, or, query, setDoc, where } from 'firebase/firestore'
-import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebaseConfig'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { useEffect, useRef, useState } from 'react'
+import { ActivityIndicator, Alert, Image, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import { Avatar } from 'react-native-paper'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebaseConfig'
+import { COLORS } from '../constants'
+import tw from '../customtwrnc'
+import { getUserById, getUserByQuery } from '../redux/actions/user'
 
 const ChatScreen = () => {
     const [currentUser, setCurrentUser] = useState(null);
@@ -52,10 +52,10 @@ const ChatScreen = () => {
     useEffect(() => {
         if (searchquery) {
             ref.current = setTimeout(async () => {
-                setSearching(!isSearching);
+                setSearching(true);
                 const res = await getUserByQuery(searchquery);
-                setSearching(false);
                 setUsers(res);
+                setSearching(false);
             }, 1000)
             return () => {
                 clearTimeout(ref.current);
@@ -74,7 +74,12 @@ const ChatScreen = () => {
         try {
             const col = collection(FIREBASE_DB, 'chats');
             try {
-                // setSearching(true);
+                setSearching(true);
+                if (currentUser.uid === user.uid) {
+                    Alert.alert("Cannot Start Chat", "You cannot start a chat with yourself.");
+                    setSearching(false);
+                    return; // Exit the function early
+                }
                 const q = query(col, or(
                     and(where("user1", "==", currentUser.uid), where("user2", "==", user.uid)),
                     and(where("user2", "==", currentUser.uid), where("user1", "==", user.uid))));
@@ -84,15 +89,19 @@ const ChatScreen = () => {
                         user1: currentUser.uid,
                         user1Pic: currentUser.photoURL || "",
                         user1username: currentUser.username,
+                        user1displayName: currentUser.displayName,
                         user2: user.uid,
                         user2Pic: user.photoURL || "",
                         user2username: user.username,
+                        user2displayName: user.displayName,
                     });
                     await setDoc(doc(col, newChat.id), { chatId: newChat.id }, { merge: true });
-                    // setSearching(false);
+                    setSearching(false);
+                    setsearchquery("");
                     navigation.navigate('chat', { chatId: newChat.id });
                 } else {
-                    // setSearching(false);
+                    setSearching(false);
+                    setsearchquery("");
                     navigation.navigate('chat', { chatId: res.docs[0].id });
                 }
                 setSearchId("");
@@ -112,12 +121,21 @@ const ChatScreen = () => {
         <SafeAreaView style={tw`flex flex-1 bg-[${COLORS.primary}]`}>
             <View style={tw`flex-row items-center justify-between p-4 mt-3 `}>
                 <View style={tw`flex-row items-center px-2 gap-1 justify-center bg-white/60 h-10 flex-1 rounded-full`}>
-                    <EvilIcons name="search" size={28} color="black" />
+
+                    {searchquery ? <MaterialIcons onPress={() => {
+                        setsearchquery("");
+                        setUsers([]);
+                        setSearching(false);
+                        Keyboard.dismiss();
+                    }} name="arrow-back" size={28} color="black" />
+                        : <EvilIcons name="search" size={28} color="black" />
+                    }
                     <TextInput
                         placeholder='Search a User...'
                         style={tw` flex-1 text-black bg-transparent `}
                         placeholderTextColor={"black"}
                         onChangeText={setsearchquery}
+                        value={searchquery}
                         autoCapitalize='none'
                     />
                 </View>
@@ -125,14 +143,12 @@ const ChatScreen = () => {
             </View>
             {searchquery ?
                 <ScrollView style={tw`border rounded-2xl p-2`}>
-                    {!isSearching && users.length === 0 ? <Text style={tw`text-white text-center`}>No users found</Text> : null}
+                    {users.length === 0 && !isSearching ? <Text style={tw`text-white text-center`}>No users found</Text> : null}
                     {users.map((user) => (
                         <TouchableOpacity key={user.uid} onPress={
                             () => {
                                 setSearchUser(user);
                                 setSearchId(user.uid);
-                                console.log('SearchId in map:', searchId);
-                                console.log('User in map:', user);
                                 handleSearch(user);
                             }
                         }  >
@@ -174,11 +190,11 @@ const ChatScreen = () => {
                         </View>
                     </> :
                     <>
-                        <Text style={tw`text-white px-2 font-Montserrat`}>Messages</Text>
-                        <ScrollView style={tw` py-2`}>
+                        <Text style={tw`text-white px-4 font-montserrat`}>Messages</Text>
+                        <ScrollView style={tw` py-2 px-2`}>
                             {chats?.map((chat, index) => (
                                 <TouchableOpacity style={tw`flex-row items-center p-2`} key={index} onPress={() => {
-                                    navigation.navigate('chat', { chatId: chat.chatId })
+                                    navigation.navigate('chat', { chatId: chat.chatId, })
                                 }}>
                                     {currentUser.uid === chat.user1 ?
                                         (chat.user2Pic ?
