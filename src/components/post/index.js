@@ -431,10 +431,8 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   onPress={handleFollow}
                   disabled={loading}
                 >
-                  <Text
-                    style={tw`text-white text-base font-semibold font-montserrat `}
-                  >
-                    {isFollowing ? "Unfollow" : "Follow"}
+                  <Text style={tw`text-white text-base font-bold `}>
+                    {isFollowing ? "Following" : "Follow"}
                   </Text>
                   {loading && (
                     <ActivityIndicator size="small" color="#FFFFFF" />
@@ -461,7 +459,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   News
                 </Text>
                 <Text
-                  style={tw`text-[10px] font-black text-white flex-1 `}
+                  style={tw`text-[10px] font-medium text-white flex-1 `}
                   numberOfLines={2}
                 >
                   {item.description}

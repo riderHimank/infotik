@@ -34,10 +34,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000', // Change this to your preferred background color
   },
   logo: {
-    width: 400,
-    height: 400,
+    width: 350,
+    height: 350,
     resizeMode: 'contain',
     marginBottom: 20,
+    padding: 20,
   },
 });
 
