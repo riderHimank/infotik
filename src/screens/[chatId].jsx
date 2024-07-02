@@ -127,14 +127,15 @@ const Chat = () => {
             navigation.setOptions({
                 headerTitle: () => <CustomHeaderTitle />,
                 headerStyle: {
-                    backgroundColor: '#262626',
+                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                    shadowColor: 'transparent',
                 },
                 headerTintColor: COLORS.white,
             });
         }
     }, [chat, navigation]);
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#0e0e0e' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.9)' }}>
             {messages.length === 0 && <View style={tw`flex-1 justify-center items-center mt-[50%]`}>
                 <Text style={tw`text-lg text-white font-montserrat`}>No messages yet</Text>
                 <Text style={tw`text-lg text-white font-montserrat`}>Start by sending a message.</Text>

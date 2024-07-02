@@ -24,9 +24,7 @@
     "production": {
       "android": {
         "buildType": "app-bundle",
-        "autoIncrement": true,
-        "proguard": true,
-        "enableProguardInReleaseBuilds": true
+        "autoIncrement": true
       }
     }
   },

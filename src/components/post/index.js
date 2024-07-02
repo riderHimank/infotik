@@ -459,8 +459,8 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   News
                 </Text>
                 <Text
-                  style={tw`text-[10px] font-medium text-white flex-1 `}
-                  numberOfLines={2}
+                  style={tw`text-[10px] font-light text-white flex-1 `}
+                  numberOfLines={3}
                 >
                   {item.description}
                 </Text>
