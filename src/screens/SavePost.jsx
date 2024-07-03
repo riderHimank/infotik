@@ -1,7 +1,7 @@
 import { StackActions, useNavigation } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, Text, TextInput, TouchableOpacity, View, StyleSheet, ScrollView } from 'react-native'
-import { EvilIcons, Feather } from '@expo/vector-icons'
+import { Entypo, EvilIcons, Feather } from '@expo/vector-icons'
 import { useDispatch } from 'react-redux'
 import { createPost } from '../redux/actions/user'
 import tw from 'twrnc'
@@ -25,11 +25,11 @@ const allKeyword = [
     '#AI',
     '#Business',
     '#Finance',
-    '#Travel',
+    '#Medicine',
     '#Culture',
     '#Art',
     '#Fashion',
-    '#Food',
+    '#Robotics',
     '#Cooking',
     '#DIY',
     '#Fitness',
@@ -51,22 +51,25 @@ const GradientText = ({ children, selected, onPress }) => {
                     <TouchableOpacity onPress={onPress}>
                         <View
 
-                            style={tw`p-1 px-3 rounded-2xl flex items-center border border-[${COLORS.secondary}]`}
+                            style={tw`p-1 px-2 rounded-2xl flex items-center border border-[${COLORS.secondary}]`}
 
                         >
-                            <Text style={tw`text-white text-sm font-montserrat text-[${COLORS.secondary}]`}>{children}</Text>
+                            <Text style={tw`text-white text-sm font-bold text-[${COLORS.secondary}]`}>{children}</Text>
                         </View>
                     </TouchableOpacity>
                 ) :
                     (
-                        <TouchableOpacity onPress={onPress}>
-                            <LinearGradient
+                        <TouchableOpacity style={tw` p-1 px-2  flex flex-row items-center justify-center bg-[${COLORS.keywordColor}] rounded-2xl border`} onPress={onPress}>
+                            {/* <LinearGradient
                                 colors={['#53C8D8', '#668AF7']}
-                                style={tw`p-1 px-3 rounded-3xl flex items-center `}
+                                style={tw`p-1 px-1 rounded-3xl flex flex-row items-center justify-center`}
 
-                            >
-                                <Text style={tw`text-white text-sm font-montserrat`}>{children}</Text>
-                            </LinearGradient>
+                            > */}
+                            <Text style={tw`text-black text-sm font-bold`}>{children}</Text>
+                            <TouchableOpacity onPress={onPress}>
+                                <Entypo name='cross' size={20} color={'#fff'} />
+                            </TouchableOpacity>
+                            {/* </LinearGradient> */}
                         </TouchableOpacity>
                     )
             }
@@ -160,7 +163,7 @@ export default function SavePostScreen(props) {
     };
     return (
 
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.formContainer}>
                 <Image
                     style={styles.mediaPreview}
@@ -215,7 +218,8 @@ export default function SavePostScreen(props) {
                             setnewslink(text);
                             handleCheckUrl(text);
                         }}
-                        placeholder=""
+                        placeholder="https://www.example.com"
+                        placeholderTextColor={'grey'}
                     />
                     {isValid ? <EvilIcons name="check" size={35} color="green" /> : <EvilIcons name="check" size={35} color="red" />}
                 </View>
@@ -238,7 +242,7 @@ export default function SavePostScreen(props) {
             <View style={tw.style(`h-32 border border-[${COLORS.secondary}] m-6 mr-11`, { borderRadius: 4 })} >
                 <TouchableOpacity onPress={() => setOpen(true)}>
 
-                    <Text style={tw`text-[${COLORS.secondary}] text-xl text-center`}>{hashtags.length == 0 ? 'Add' : 'Edit'} # tags</Text>
+                    <Text style={tw`text-[${COLORS.secondary}] text-xl text-center`}>{hashtags.length == 0 ? 'Add' : 'Edit'}  Tags</Text>
                 </TouchableOpacity>
                 <ScrollView>
                     <View style={tw`p-4 flex flex-wrap flex-row gap-3 justify-center`}>
@@ -269,7 +273,7 @@ export default function SavePostScreen(props) {
                     <Feather name="chevron-right" size={24} color={COLORS.secondary} />
                 </TouchableOpacity>
             </View>
-            <View style={tw`absolute top-0 left-0 right-0 bottom-0 bg-[${COLORS.primary}] ${open ? '' : 'hidden'}`}>
+            <ScrollView style={tw`absolute top-0 left-0 right-0 bottom-0 bg-[${COLORS.primary}] ${open ? '' : 'hidden'}`}>
                 <View style={tw`flex-1 bg-[${COLORS.primary}] py-4`}>
                     <View style={tw`flex items-center`}>
                         <Image source={require('../../assets/fulllogo.png')} style={{ width: 80, height: 80, resizeMode: 'contain', marginBottom: 2 }} />
@@ -294,12 +298,12 @@ export default function SavePostScreen(props) {
                         }
                     </View>
 
-                    <View style={tw`p-4 px-8`}>
-                        <Button onPress={() => setOpen(false)}>NEXT</Button>
+                    <View style={tw`p-4 px-4 items-center`}>
+                        <Button onPress={() => setOpen(false)}>Save</Button>
                     </View>
                 </View>
-            </View>
-        </View>
+            </ScrollView>
+        </ScrollView>
 
     )
 }

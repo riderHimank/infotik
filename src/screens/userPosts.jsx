@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useDispatch } from 'react-redux'
 import Scroller from '../components/Scroller';
 
-export const userPosts = ({ route }) => {
+export const UserPosts = ({ route }) => {
 
   const [change, setChange] = useState(false);
   const [posts, setPosts] = useState([]);

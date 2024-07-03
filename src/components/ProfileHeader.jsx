@@ -12,6 +12,7 @@ import tw from '../customtwrnc'
 import { COLORS } from '../constants'
 import { checkFollow, followUser, getTotalLikesForUser } from '../redux/actions/user'
 import NavBarGeneral from './general/navbar'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 
@@ -77,7 +78,7 @@ export default function ProfileHeader({ user: puser, change }) {
                     <View style={{ flexDirection: 'row' }}>
                         <TouchableOpacity
                             style={buttonStyles.grayOutlinedButton}
-                            onPress={() => navigation.navigate('chatSingle', { contactId: user?.uid })}
+                            onPress={() => navigation.navigate('chatScreen')}
                         >
                             <Text style={buttonStyles.grayOutlinedButtonText}>Message</Text>
                         </TouchableOpacity>
@@ -120,7 +121,7 @@ export default function ProfileHeader({ user: puser, change }) {
         }
     }
     return (
-        <>
+        <SafeAreaView>
             <NavBarGeneral title={user?.displayName} rightButton={{ display: true, name: 'more-horizontal', color: 'white', action: null }} />
             <View style={styles.container}>
                 {
@@ -148,24 +149,33 @@ export default function ProfileHeader({ user: puser, change }) {
                     </View>
                 </View>
                 {FIREBASE_AUTH.currentUser?.uid === user?.uid ?
-                    <View>
-                        <TouchableOpacity
-                            style={buttonStyles.grayOutlinedButton}
-                            onPress={() => navigation.navigate('editProfile')}
-                        >
-                            <Text style={buttonStyles.grayOutlinedButtonText}>Edit Profile</Text>
-                        </TouchableOpacity>
+                    <>
+                        <View style={tw`flex flex-row gap-2`}>
+                            <TouchableOpacity
+                                style={buttonStyles.grayOutlinedButton}
+                                onPress={() => navigation.navigate('editProfile')}
+                            >
+                                <Text style={buttonStyles.grayOutlinedButtonText}>Edit Profile</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={buttonStyles.grayOutlinedButton}
+                                onPress={() => navigation.navigate('keyword')}
+                            >
+                                <Text style={buttonStyles.grayOutlinedButtonText}>Edit Keywords</Text>
+                            </TouchableOpacity>
+                        </View>
                         {user?.bio ?
                             <Text style={tw`py-2 text-[#86878B] text-center`}>{user.bio}</Text>
                             :
                             <Text style={tw`py-2 text-[#86878B] text-center`} onPress={() => navigation.navigate('editProfileField', { title: 'Bio', field: 'bio', value: user?.bio })}>Tap to add bio</Text>
                         }
-                    </View>
+                    </>
+
                     :
                     renderFollowButton()
                 }
             </View>
-        </>
+        </SafeAreaView>
     )
 }
 

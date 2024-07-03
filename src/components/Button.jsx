@@ -1,17 +1,21 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import tw from 'twrnc';
 
-const Button = ({ children, onPress }) => {
+const Button = ({ children, onPress, loading, disabled }) => {
     return (
-        <TouchableOpacity onPress={onPress} style={tw`w-48`}>
+        <TouchableOpacity onPress={onPress} style={tw`w-48`} disabled={disabled}>
             <LinearGradient
                 colors={['#53C8D8', '#668AF7']}
-                style={[tw`p-2 rounded-3xl flex items-center justify-center`, styles.button]}
+                style={[tw`p-2 rounded-3xl flex flex-row items-center justify-center`, styles.button]}
 
             >
-                <Text style={tw.style(`text-white text-sm`, { fontFamily: 'Montserrat', fontSize: 17 })}>{children}</Text>
+
+                <Text style={tw.style(`text-white text-sm pr-2`, { fontFamily: 'Montserrat', fontSize: 17 })}>{children}</Text>
+                {loading && (
+                    <ActivityIndicator size="small" color="#fff" />
+                )}
             </LinearGradient>
         </TouchableOpacity>
 

@@ -13,25 +13,26 @@ import Profile from './Profile';
 import { FIREBASE_AUTH } from '../../firebaseConfig';
 import MyProfile from './MyProfile';
 import Discover from './Discover';
+import ChatScreen from './ChatScreen';
 
 
 
 const Tab = createMaterialBottomTabNavigator();
 
-const CustomTabBarIcon = ({ name, color,label }) => {
-  
+const CustomTabBarIcon = ({ name, color, label }) => {
+
 
   return (
-    <View style={{ width: 65, height: 50, position: 'relative', bottom: label == "Scroll" ? 10 : 4,backgroundColor:'black',  display: 'flex', alignItems: 'center' }}>
+    <View style={{ width: 65, height: 50, position: 'relative', bottom: label == "Scroll" ? 10 : 4, backgroundColor: 'black', display: 'flex', alignItems: 'center' }}>
       {
         label != "Scroll" ? (
-          <Feather name={name} size={color == COLORS.secondary ? 28: 24} color={color} />
-        ): (
-          <Image source={color == COLORS.secondary ? require('../../assets/iconcolor.png') : require('../../assets/iconlogo.png')} style={{ width: 35, height: 35, resizeMode: 'contain' }}/>
+          <Feather name={name} size={color == COLORS.secondary ? 28 : 24} color={color} />
+        ) : (
+          <Image source={color == COLORS.secondary ? require('../../assets/iconcolor.png') : require('../../assets/iconlogo.png')} style={{ width: 35, height: 35, resizeMode: 'contain' }} />
         )
       }
-      
-      <Text style={{color: color == COLORS.secondary ? 'white': 'gray',fontSize:  color == COLORS.secondary ? 12: 10,fontFamily: 'Montserrat'}}>{label}</Text>
+
+      <Text style={{ color: color == COLORS.secondary ? 'white' : 'gray', fontSize: color == COLORS.secondary ? 12 : 10, fontFamily: 'Montserrat' }}>{label}</Text>
     </View>
   );
 };
@@ -39,7 +40,7 @@ const CustomTabBarIcon = ({ name, color,label }) => {
 const Home = () => {
 
 
-  const {user} = useSelector(store => store.user);
+  const { user } = useSelector(store => store.user);
 
   return (
     <Tab.Navigator
@@ -52,7 +53,7 @@ const Home = () => {
         component={CameraScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <CustomTabBarIcon name="plus" color={color} label={'Create'}/>
+            <CustomTabBarIcon name="plus" color={color} label={'Create'} />
           ),
           tabBarLabel: '',
         }}
@@ -62,7 +63,7 @@ const Home = () => {
         component={Discover}
         options={{
           tabBarIcon: ({ color }) => (
-            <CustomTabBarIcon name="search" color={color} label={'Discover'}/>
+            <CustomTabBarIcon name="search" color={color} label={'Discover'} />
           ),
           tabBarLabel: '',
         }}
@@ -72,17 +73,17 @@ const Home = () => {
         component={ScrollScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <CustomTabBarIcon name="search" color={color} label={'Scroll'}/>
+            <CustomTabBarIcon name="search" color={color} label={'Scroll'} />
           ),
           tabBarLabel: '',
         }}
       />
       <Tab.Screen
         name="inbox"
-        component={Keyword}
+        component={ChatScreen}
         options={{
           tabBarIcon: ({ color }) => (
-            <CustomTabBarIcon name="message-square" color={color} label={'Inbox'}/>
+            <CustomTabBarIcon name="message-square" color={color} label={'Inbox'} />
           ),
           tabBarLabel: '',
         }}
@@ -92,13 +93,13 @@ const Home = () => {
         component={MyProfile}
         options={{
           tabBarIcon: ({ color }) => (
-            <CustomTabBarIcon name="user" color={color} label={'Me'}/>
+            <CustomTabBarIcon name="user" color={color} label={'Me'} />
           ),
           tabBarLabel: '',
         }}
-        
+
       />
-      
+
     </Tab.Navigator>
   )
 }

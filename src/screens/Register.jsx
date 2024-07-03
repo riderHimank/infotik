@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { Dimensions, Image, SafeAreaView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, SafeAreaView, ScrollView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import FbLogo from '../../assets/fb-icon.png';
 import GoogleLogo from '../../assets/google_icon.png';
@@ -19,7 +19,7 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [error, setError] = useState('');
-
+    const [loading, setloading] = useState(false);
 
     const { usernames } = useSelector(store => store.user);
     const navigation = useNavigation();
@@ -49,7 +49,9 @@ const Register = () => {
 
     const handleGoogleSignIn = async () => {
         try {
+            setloading(true);
             const res = await dispatch(GoogleSignUp());
+            setloading(false);
             if (res && typeof res === 'object') {
                 navigation.reset({
                     index: 0,
@@ -59,6 +61,7 @@ const Register = () => {
                 setIsUsernameSet(false);
             }
         } catch (error) {
+            setloading(false);
             ToastAndroid.show('Google sign in failed.', ToastAndroid.SHORT);
         }
     }
@@ -68,8 +71,9 @@ const Register = () => {
             ToastAndroid.show('Please enter a username.', ToastAndroid.SHORT);
             return;
         }
-
+        setloading(true);
         const success = await dispatch(saveUserField("username", username));
+        setloading(false);
         if (success) {
             setIsUsernameSet(true); // Username is set, now navigate to the keyword screen
             navigation.reset({
@@ -77,16 +81,20 @@ const Register = () => {
                 routes: [{ name: 'keyword' }],
             });
         } else {
+            setloading(false);
             ToastAndroid.show('Username already taken.', ToastAndroid.SHORT);
         }
     }
 
     const handleRegister = async (async) => {
+        setloading(true);
         if (!email || !password || !name) {
+            setloading(false);
             ToastAndroid.show('Please fill all fields.', ToastAndroid.SHORT);
             return
         }
         const res = await dispatch(register(email, password, name, username));
+        setloading(false);
         if (res) {
             navigation.reset({
                 index: 0,
@@ -117,72 +125,78 @@ const Register = () => {
 
     return (
         <SafeAreaView style={tw`flex-1 bg-[${COLORS.primary}] flex justify-start items-center`}>
-            {!isUsernameSet && (
-                <View style={tw`w-full p-4 flex justify-center`}>
-                    <Text style={tw`text-white justify-center items-center text-xl mt-[50%]`}> Set your Username :</Text>
-                    <Input
-                        autoCapitalize='none'
-                        placeholder={"Enter Your username"}
-                        value={username}
-                        setValue={setUsername}
-                    />
-                    {error && <Text style={tw`text-xs text-red-400 px-2 font-montserrat`}>{error}</Text>}
-                    <View style={tw`items-center`}>
-                        <Button onPress={handleSetUsername}>Set Username</Button>
-                    </View>
-                </View>
-            )}
-            {isUsernameSet && <View style={tw` w-[18rem] mt-10 rounded-md`}>
-                <View style={tw`flex items-center mt-10 `}>
-                    <Image resizeMode='contain' source={require('../../assets/bented.png')} style={{ width: windowWidth * (showForm ? 0.6 : 0.7), height: windowHeight * (showForm ? 0.2 : 0.3), marginBottom: 2 }} />
-                </View>
-                <View style={tw`mt-5`}>
-                    {showForm ? (
-                        <View style={tw` mb-8`} >
-                            <Input placeholder={"Enter Your name"} value={name} setValue={setName} />
-                            <Input autoCapitalize='none' placeholder={"Enter Your username"} value={username} setValue={setUsername} />
-                            {error && <Text style={tw`text-xs text-red-400 px-2 font-montserrat`}>{error}</Text>}
-
-                            <Input keyboardType={'email-address'} placeholder={"Enter Your email"} value={email} setValue={setEmail} />
-                            <Input placeholder={"Enter Your password"} value={password} setValue={setPassword} secureTextEntry={true} />
-                            <View style={tw`items-center mt-1 `}>
-                                <Button onPress={handleRegister}>SIGN UP</Button>
-                            </View>
+            <ScrollView>
+                {!isUsernameSet && (
+                    <View style={tw`w-full p-4 flex justify-center`}>
+                        <Text style={tw`text-white justify-center items-center text-xl mt-[50%]`}> Set your Username :</Text>
+                        <Input
+                            autoCapitalize='none'
+                            placeholder={"Enter Your username"}
+                            value={username}
+                            setValue={setUsername}
+                        />
+                        {error && <Text style={tw`text-xs text-red-400 px-2 font-montserrat`}>{error}</Text>}
+                        <View style={tw`items-center`}>
+                            <Button loading={loading} disabled={loading} onPress={handleSetUsername}>Set Username</Button>
                         </View>
-                    ) : (
-                        <>
-                            <SocialButton
-                                logo={GoogleLogo}
-                                color="#fff"
-                                textColor={'rgb(64 64 64);'}
-                                text="Sign in with Google"
-                                onPress={handleGoogleSignIn}
-                            />
-                            <SocialButton
-                                logo={FbLogo}
-                                color="rgb(59 130 246)"
-                                text="Sign in with Facebook"
-                                textColor={'white'}
-                                onPress={() => {
-                                    ToastAndroid.show('Feature coming soon.', ToastAndroid.SHORT);
-                                }}
-                            />
-                            <View style={tw`flex flex-col items-center mt-6 gap-2`}>
-                                <Text style={tw.style(`text-white text-[13px]`, { fontFamily: 'Montserrat' })}>Or</Text>
-                                <TouchableOpacity onPress={() => setShowForm(true)}>
-                                    <Text style={tw.style(`text-[${COLORS.secondary}] text-[14px]`, { fontFamily: 'Montserrat' })}>Sign Up with Email</Text>
-                                </TouchableOpacity>
+                    </View>
+                )}
+                {isUsernameSet && <View style={tw` w-[18rem] mt-10 rounded-md`}>
+                    <View style={tw`flex items-center mt-10 `}>
+                        <Image resizeMode='contain' source={require('../../assets/bented.png')} style={{ width: windowWidth * (showForm ? 0.6 : 0.7), height: windowHeight * (showForm ? 0.2 : 0.3), marginBottom: 2 }} />
+                    </View>
+                    <View style={tw`mt-5`}>
+                        {showForm ? (
+                            <View style={tw` mb-8`} >
+                                <Input placeholder={"Enter Your name"} value={name} setValue={setName} />
+                                <Input autoCapitalize='none' placeholder={"Enter Your username"} value={username} setValue={setUsername} />
+                                {error && <Text style={tw`text-xs text-red-400 px-2 font-montserrat`}>{error}</Text>}
+
+                                <Input keyboardType={'email-address'} placeholder={"Enter Your email"} value={email} setValue={setEmail} />
+                                <Input placeholder={"Enter Your password"} value={password} setValue={setPassword} secureTextEntry={true} />
+                                <View style={tw`flex flex-row justify-center items-center mt-1 `}>
+                                    <Button loading={loading} disabled={loading} onPress={handleRegister}>SIGN UP
+                                    </Button>
+                                </View>
                             </View>
-                            <View style={tw`flex flex-row justify-center gap-1 mb-4 mt-4`}>
-                                <Text style={tw.style(`text-[${COLORS.white}] text-[14px]`, { fontFamily: 'Montserrat' })}>You Already have an account?</Text>
-                                <TouchableOpacity onPress={() => navigation.navigate('login')}>
-                                    <Text style={tw.style(`text-[${COLORS.secondary}] text-[14px]`, { fontFamily: 'Montserrat' })}>Sign In</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </>
-                    )}
-                </View>
-            </View>}
+                        ) : (
+                            <>
+                                <SocialButton
+                                    logo={GoogleLogo}
+                                    color="#fff"
+                                    textColor={'rgb(64 64 64);'}
+                                    text="Sign in with Google"
+                                    onPress={handleGoogleSignIn}
+                                    disabled={loading}
+                                    loading={loading}
+                                />
+                                <SocialButton
+                                    logo={FbLogo}
+                                    color="rgb(59 130 246)"
+                                    text="Sign in with Facebook"
+                                    textColor={'white'}
+                                    onPress={() => {
+                                        ToastAndroid.show('Feature coming soon.', ToastAndroid.SHORT);
+                                    }}
+                                />
+                                <View style={tw`flex flex-col items-center mt-6 gap-2`}>
+                                    <Text style={tw.style(`text-white text-[13px]`, { fontFamily: 'Montserrat' })}>Or</Text>
+                                    <TouchableOpacity onPress={() => setShowForm(true)}>
+                                        <Text style={tw.style(`text-[${COLORS.secondary}] text-[14px]`, { fontFamily: 'Montserrat' })}>Sign Up with Email</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={tw`flex flex-row justify-center gap-1 mb-4 mt-4`}>
+                                    <Text style={tw.style(`text-[${COLORS.white}] text-[14px]`, { fontFamily: 'Montserrat' })}>You Already have an account?</Text>
+                                    <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                                        <Text style={tw.style(`text-[${COLORS.secondary}] text-[14px]`, { fontFamily: 'Montserrat' })}>Sign In</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
+                    </View>
+                </View>}
+            </ScrollView>
+
         </SafeAreaView>
     )
 }

@@ -7,7 +7,7 @@ import * as MediaLibrary from 'expo-media-library'
 import * as VideoThumbnails from 'expo-video-thumbnails';
 
 import { useIsFocused } from '@react-navigation/core'
-import { Feather } from '@expo/vector-icons'
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons'
 
 import { useNavigation } from '@react-navigation/native'
 
@@ -45,8 +45,14 @@ export default function CameraScreen() {
             setHasGalleryPermissions(galleryStatus.status == 'granted')
 
             if (galleryStatus.status == 'granted') {
-                const userGalleryMedia = await MediaLibrary.getAssetsAsync({ sortBy: ['creationTime'], mediaType: ['video'] })
-                setGalleryItems(userGalleryMedia.assets)
+                const userGalleryMedia = await MediaLibrary.getAssetsAsync({ sortBy: ['creationTime'], mediaType: ['video'] });
+
+                if (userGalleryMedia.assets.length > 0) {
+                    setGalleryItems(userGalleryMedia.assets);
+                    console.log('Media found in gallery', userGalleryMedia.assets);
+                } else {
+                    console.log('No media found in gallery');
+                }
             }
         })()
     }, [])
@@ -82,11 +88,11 @@ export default function CameraScreen() {
             allowsEditing: true,
             aspect: [16, 9],
             quality: 1,
-        });        
-        
+        });
+
         if (!result.canceled) {
-            let sourceThumb = await generateThumbnail(result.assets[0].uri); 
-            
+            let sourceThumb = await generateThumbnail(result.assets[0].uri);
+
             navigation.navigate('savePost', { source: result.assets[0].uri, sourceThumb })
         }
     }
@@ -112,6 +118,7 @@ export default function CameraScreen() {
     }
 
     return (
+
         <View style={styles.container}>
             {isFocused ?
                 <Camera
@@ -158,7 +165,7 @@ export default function CameraScreen() {
                         onPress={() => pickFromGallery()}
                         style={styles.galleryButton}>
                         {galleryItems[0] == undefined ?
-                            <></>
+                            <MaterialCommunityIcons name="image-multiple" size={44} color="white" />
                             :
                             <Image
                                 style={styles.galleryButtonImage}
@@ -201,14 +208,14 @@ const styles = StyleSheet.create({
         width: 80,
         alignSelf: 'center'
     },
-    galleryButton: {
-        borderWidth: 2,
-        borderColor: 'white',
-        borderRadius: 10,
-        overflow: 'hidden',
-        width: 50,
-        height: 50,
-    },
+    // galleryButton: {
+    //     borderWidth: 2,
+    //     borderColor: 'white',
+    //     borderRadius: 10,
+    //     overflow: 'hidden',
+    //     width: 50,
+    //     height: 50,
+    // },
     galleryButtonImage: {
         width: 50,
         height: 50,

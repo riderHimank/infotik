@@ -3,7 +3,6 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useRef,
   useState,
 } from "react";
 import {
@@ -12,13 +11,14 @@ import {
   Image,
   Linking,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 // import { useUser } from '../../hooks/useUser'
 // import PostSingleOverlay from './overlay'
-import { Feather } from "@expo/vector-icons";
+import { Feather, SimpleLineIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Avatar } from "react-native-paper";
@@ -38,7 +38,9 @@ import styles from "./styles";
 const renderItem = ({ item }) => (
   <TouchableOpacity>
     <View style={tw`mx-1`}>
-      <Text style={tw`text-sm text-[${COLORS.secondary}] font-montserrat`}>
+      <Text
+        style={tw`text-sm text-[${COLORS.secondary}] font-semibold font-montserrat`}
+      >
         {item}
       </Text>
     </View>
@@ -56,13 +58,11 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
   const [likesCount, setLikesCount] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const bottomSheetModalRef = useRef(null);
   const navigation = useNavigation();
   const [mute, setMute] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
   const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
-
   useImperativeHandle(parentRef, () => ({
     play,
     unload,
@@ -181,13 +181,12 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
   };
 
   const OpenComments = () => {
-    console.log("opening...");
-    // bottomSheetModalRef.current.open();
     setIsCommentModalVisible(!isCommentModalVisible);
   };
   const closeModal = () => {
     setIsCommentModalVisible(!isCommentModalVisible);
   };
+
   const handleProfile = () => {
     stop();
     navigation.navigate("profile", { uid: user.uid });
@@ -305,7 +304,22 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
           </View>
         </TouchableWithoutFeedback>
       )}
-
+      <Video
+        ref={video}
+        style={styles.container}
+        source={{
+          uri: item.media[0],
+        }}
+        useNativeControls={false}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay={false}
+        isLooping
+        usePoster
+        onLoadStart={handleLoadStart}
+        posterSource={{ uri: item.media[1] }}
+        posterStyle={{ resizeMode: "cover", height: "100%" }}
+        onReadyForDisplay={handleReadyForDisplay}
+      />
       <TouchableWithoutFeedback
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -317,47 +331,27 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
         >
           {!videoStop && (
             <>
-              <View style={tw`py-2 px-4 flex gap-2 items-end`}>
-                <View style={tw`flex gap-0 items-center`}>
-                  <TouchableOpacity onPress={handleProfile}>
-                    {user?.photoURL &&
-                    isValidUrl(user?.photoURL) &&
-                    !imageFailedToLoad ? (
-                      <Image
-                        source={{ uri: user?.photoURL }}
-                        style={{
-                          width: 35,
-                          height: 35,
-                          resizeMode: "contain",
-                          marginBottom: 5,
-                          borderRadius: 9999,
-                          marginBottom: 8,
-                        }}
-                        onError={() => setImageFailedToLoad(true)}
-                      />
-                    ) : (
-                      <Avatar.Icon
-                        size={36}
-                        backgroundColor={COLORS.secondary}
-                        icon={"account"}
-                      />
-                    )}
-                  </TouchableOpacity>
-                </View>
+              {/* // like , comment and share */}
+              <View style={tw`py-2 px-2 flex gap-2 items-end`}>
                 <View style={tw`flex gap-0 items-center`}>
                   <TouchableOpacity onPress={() => HandleLike(item.id)}>
-                    <Image
-                      source={
-                        isLike
-                          ? require("../../../assets/heartfill.png")
-                          : require("../../../assets/heart.png")
-                      }
-                      style={{
-                        width: 31,
-                        resizeMode: "contain",
-                        marginBottom: 5,
-                      }}
-                    />
+                    {isLike ? (
+                      <Image
+                        source={require("../../../assets/heartfill.png")}
+                        style={{
+                          width: 31,
+                          resizeMode: "contain",
+                          marginBottom: 1,
+                        }}
+                      />
+                    ) : (
+                      <SimpleLineIcons
+                        name="heart"
+                        size={30}
+                        resizeMode="contain"
+                        color="#fff"
+                      />
+                    )}
                   </TouchableOpacity>
                   <Text style={tw`text-white text-sm font-montserrat`}>
                     {likesCount}
@@ -365,13 +359,11 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                 </View>
                 <View style={tw`flex gap-0 items-center`}>
                   <TouchableOpacity onPress={OpenComments}>
-                    <Image
-                      source={require("../../../assets/comment.png")}
-                      style={{
-                        width: 34,
-                        resizeMode: "contain",
-                        marginBottom: 5,
-                      }}
+                    <Feather
+                      name="message-circle"
+                      color="#fff"
+                      size={31}
+                      resizeMode="contain"
                     />
                   </TouchableOpacity>
                   <Text style={tw`text-white text-sm font-montserrat`}>
@@ -379,34 +371,75 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   </Text>
                 </View>
                 <View style={tw`flex gap-0 items-center`}>
-                  <Image
-                    source={require("../../../assets/share.png")}
-                    style={{
-                      width: 34,
-                      resizeMode: "contain",
-                      marginBottom: 5,
+                  <TouchableOpacity
+                    onPress={() => {
+                      ToastAndroid.show(
+                        "Feature coming soon.",
+                        ToastAndroid.SHORT
+                      );
                     }}
-                  />
+                  >
+                    <Feather
+                      color="#fff"
+                      size={28}
+                      resizeMode="contain"
+                      name="send"
+                    />
+                  </TouchableOpacity>
                   <Text style={tw`text-white text-sm font-montserrat`}>
                     Share
                   </Text>
                 </View>
               </View>
+              {/* // profile pic, username and follow button */}
               <View style={tw`px-4 flex-row justify-start items-center gap-3 `}>
-                <Text style={tw`text-white text-lg font-montserrat`}>
-                  @{user?.username}
-                </Text>
                 <TouchableOpacity
-                  style={tw`py-1 px-2 rounded-md border border-white flex flex-row items-center gap-1 ${
+                  style={tw`flex-row items-center gap-2`}
+                  onPress={handleProfile}
+                >
+                  {user?.photoURL &&
+                  isValidUrl(user?.photoURL) &&
+                  !imageFailedToLoad ? (
+                    <Image
+                      source={{ uri: user?.photoURL }}
+                      style={{
+                        width: 35,
+                        height: 35,
+                        resizeMode: "contain",
+                        marginBottom: 5,
+                        borderRadius: 9999,
+                        marginBottom: 8,
+                      }}
+                      onError={() => setImageFailedToLoad(true)}
+                    />
+                  ) : (
+                    <Avatar.Icon
+                      size={36}
+                      backgroundColor={COLORS.secondary}
+                      icon={"account"}
+                    />
+                  )}
+                  <Text style={tw`text-white text-base font-semibold`}>
+                    {user?.username}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={tw` px-1 rounded-md border-2 border-white flex flex-row items-center gap-1 ${
                     isFollowing ? `bg-transparent text-white` : ""
                   }`}
                   onPress={handleFollow}
+                  disabled={loading}
                 >
-                  <Text style={tw`text-white text-base font-montserrat `}>
-                    {isFollowing ? "Unfollow" : "Follow"}
+                  <Text style={tw`text-white text-base font-bold `}>
+                    {isFollowing ? "Following" : "Follow"}
                   </Text>
+                  {loading && (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  )}
                 </TouchableOpacity>
               </View>
+              {/* hashtags */}
               <View style={tw`py-2 px-4`}>
                 <FlatList
                   key={index}
@@ -416,8 +449,9 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   horizontal={true} // Set horizontal to true
                 />
               </View>
+              {/* news description newslink */}
               <View
-                style={tw`flex flex-row items-center gap-2 border-t border-b border-[${COLORS.secondary}] pl-4`}
+                style={tw`flex flex-row items-center gap-2 border-t border-b border-[${COLORS.secondary}] pl-4 bg-black/50`}
               >
                 <Text
                   style={tw`text-sm text-[${COLORS.secondary}] font-montserrat`}
@@ -425,7 +459,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   News
                 </Text>
                 <Text
-                  style={tw`text-[10px] text-white flex-1 font-montserrat`}
+                  style={tw`text-[10px] font-light text-white flex-1 `}
                   numberOfLines={3}
                 >
                   {item.description}
@@ -438,7 +472,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                     <View style={tw`w-8 flex justify-center items-center`}>
                       <Feather
                         name={"chevron-right"}
-                        size={30}
+                        size={20}
                         color={"white"}
                       />
                     </View>
@@ -447,6 +481,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
               </View>
             </>
           )}
+
           {isCommentModalVisible && (
             <CommentModel
               isVisible={isCommentModalVisible}
@@ -456,24 +491,6 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
           )}
         </View>
       </TouchableWithoutFeedback>
-      <View style={tw`flex-1 flex py-2 bg-black`}>
-        <Video
-          ref={video}
-          style={styles.container}
-          source={{
-            uri: item.media[0],
-          }}
-          useNativeControls={false}
-          resizeMode={ResizeMode.COVER}
-          shouldPlay={false}
-          isLooping
-          usePoster
-          onLoadStart={handleLoadStart}
-          posterSource={{ uri: item.media[1] }}
-          posterStyle={{ resizeMode: "cover", height: "100%" }}
-          onReadyForDisplay={handleReadyForDisplay}
-        />
-      </View>
     </>
   );
 });

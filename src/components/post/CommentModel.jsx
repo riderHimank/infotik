@@ -31,6 +31,10 @@ const CommentModel = (({ post, isVisible, onClose }) => {
   };
 
   const handlePostComment = async () => {
+    if (!postComment.content.trim()) {
+      alert("Comment cannot be empty!");
+      return;
+    }
     try {
       setIsPosting(true);
       const ref = doc(collection(FIREBASE_DB, 'post'), post.uid);
