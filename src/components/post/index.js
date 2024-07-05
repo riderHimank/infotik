@@ -16,6 +16,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import uuid from "uuid-random";
 // import { useUser } from '../../hooks/useUser'
 // import PostSingleOverlay from './overlay'
 import { Feather, SimpleLineIcons } from "@expo/vector-icons";
@@ -34,6 +35,9 @@ import {
 } from "../../redux/actions/user";
 import CommentModel from "./CommentModel";
 import styles from "./styles";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
+import { addDoc, collection } from "firebase/firestore";
+import { useSelector } from "react-redux";
 
 const renderItem = ({ item }) => (
   <TouchableOpacity>
@@ -248,6 +252,49 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
     setLoading(false);
   };
 
+  const { chats } = useSelector((state) => state.user);
+  const [selectedChat, setSelected] = useState({
+    chatId: "cqTfcyrYRtsVj5YfSwkF",
+    user1: "BkpFdGDh22b9sTfWCAIVf6qJ1Gs1",
+    user1Pic:
+      "https://firebasestorage.googleapis.com/v0/b/infotik-617ac.appspot.com/o/user%2FBkpFdGDh22b9sTfWCAIVf6qJ1Gs1%2Favatar?alt=media&token=6663ea23-2dbb-439b-8f7f-64420df59585",
+    user1displayName: "HImank Bohara",
+    user1username: "rider",
+    user2: "z9mkeMRTABcpMDXuPy8bDQQGVut2",
+    user2Pic:
+      "https://lh3.googleusercontent.com/a/ACg8ocLemtZLyJsdp9gHhNAjHTDWdFE4zMJc5Bd1PoBLB6IKE20A-A=s96-c",
+    user2displayName: "2405 KAPIL BADOKAR",
+    user2username: "kapil_badokar_ece",
+  });
+
+  const handleShare = async () => {
+    try {
+      const msg = {
+        _id: uuid(),
+        text: " ",
+        createdAt: new Date().toISOString(),
+        senderId: FIREBASE_AUTH.currentUser.uid,
+        receiverId:
+          FIREBASE_AUTH.currentUser.uid === selectedChat.user1
+            ? selectedChat.user2
+            : selectedChat.user1,
+        user: {
+          _id: FIREBASE_AUTH.currentUser.uid,
+        },
+        video: item.media[0],
+        post: JSON.parse(JSON.stringify(item)),
+      };
+      const c = collection(
+        FIREBASE_DB,
+        `chats/${selectedChat.chatId}/messages`
+      );
+      await addDoc(c, msg);
+      console.log("done");
+    } catch (r) {
+      console.log(r);
+    }
+  };
+
   function isValidUrl(string) {
     try {
       new URL(string);
@@ -373,10 +420,11 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                 <View style={tw`flex gap-0 items-center`}>
                   <TouchableOpacity
                     onPress={() => {
-                      ToastAndroid.show(
-                        "Feature coming soon.",
-                        ToastAndroid.SHORT
-                      );
+                      // ToastAndroid.show(
+                      //   "Feature coming soon.",
+                      //   ToastAndroid.SHORT
+                      // );
+                      handleShare();
                     }}
                   >
                     <Feather

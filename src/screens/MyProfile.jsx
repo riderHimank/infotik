@@ -6,24 +6,24 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getPostsByUserId, getUserById } from '../redux/actions/user'
 import ProfilePostList from '../components/postList'
 import tw from '../customtwrnc'
-import {COLORS} from '../constants/index'
+import { COLORS } from '../constants/index'
 import { TouchableOpacity } from '@gorhom/bottom-sheet'
 import RenderProfile from '../components/RenderProfile'
 
 const MyProfile = () => {
   const dispatch = useDispatch();
-  const [change,setChange] = useState(false);
-  const {userPosts,user} = useSelector(store => store.user);
+  const [change, setChange] = useState(false);
+  const { userPosts, user, chats } = useSelector(store => store.user);
   useEffect(() => {
-    if(user){
-        dispatch(getPostsByUserId(user.uid));
-        setChange(prev => !prev);
+    if (user) {
+      dispatch(getPostsByUserId(user.uid));
+      setChange(prev => !prev);
     }
-  },[user])
+  }, [user])
 
-
+  // console.log(chats);
   return (
-    <RenderProfile user={user} change={change} posts={userPosts[user?.uid]}/>
+    <RenderProfile user={user} change={change} posts={userPosts[user?.uid]} />
   )
 }
 

@@ -12,11 +12,11 @@ const ReelCard = ({ media, description, onPress }) => {
                     style={tw.style({ resizeMode: 'cover' }, ` border rounded-md border-[${COLORS.secondary}] absolute top-0 left-0 right-0 bottom-0`)}
                     source={{ uri: media[1] }}
                 />
-                <View>
+                {description !== "" && <View>
                     <Text numberOfLines={2} style={tw`text-white/80 py-1 bg-black/80 text-xs m-0.4`}>
                         {description}
                     </Text>
-                </View>
+                </View>}
             </View>
         </TouchableOpacity>
     )
