@@ -11,6 +11,7 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  or,
   orderBy,
   query,
   serverTimestamp,
@@ -26,6 +27,7 @@ import { saveMediaToStorage } from "../../utils/savepost";
 import {
   allpostsreq,
   allusername,
+  allchats,
   LoadUserFai,
   LoadUserReq,
   LoadUserSuc,
@@ -722,5 +724,28 @@ export const getTotalLikesForUser = async (userId) => {
   } catch (error) {
     console.error("Error getting total likes for user:", error);
     return 0; // Return 0 in case of error
+  }
+};
+
+export const getAllChats = () => async (dispatch) => {
+  try {
+    const q = query(
+      collection(FIREBASE_DB, "chats"),
+      or(
+        where("user1", "==", FIREBASE_AUTH.currentUser.uid),
+        where("user2", "==", FIREBASE_AUTH.currentUser.uid)
+      )
+    );
+    let data = [];
+    const d = await getDocs(q);
+    d.forEach((doc) => data.push(doc.data()));
+    dispatch({
+      type: allchats,
+      chats: JSON.parse(JSON.stringify(data)),
+    });
+    // return data;
+  } catch (e) {
+    console.log(e);
+    return [];
   }
 };

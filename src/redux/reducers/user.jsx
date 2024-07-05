@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { LoginUserReq, LoginUserSuc, LoginUserFai, LoadUserReq, LoadUserSuc, LoadUserFai, LogoutUserFai, LogoutUserReq, LogoutUserSuc, ClearMessage, ClearError, RegisterUserReq, RegisterUserSuc, RegisterUserFai,allpostsreq, allusername } from '../ActionType';
+import { LoginUserReq, LoginUserSuc, LoginUserFai, LoadUserReq, LoadUserSuc, LoadUserFai, LogoutUserFai, LogoutUserReq, LogoutUserSuc, ClearMessage, ClearError, RegisterUserReq, RegisterUserSuc, RegisterUserFai, allpostsreq, allusername, allchats } from '../ActionType';
 
 const initialstate = {
     loading: false,
@@ -9,6 +9,7 @@ const initialstate = {
     error: null,
     posts: [],
     usernames: [],
+    chats: [],
     change: false,
     userPosts: {},
     open: false
@@ -26,17 +27,17 @@ const userReducer = createReducer(
             state.loading = false;
             state.user = payload.user
             state.isAuth = true;
-            
+
         })
         builder.addCase(LoginUserFai, (state, payload) => {
             state.user = null;
             state.isAuth = false,
-            state.error = payload;
+                state.error = payload;
             state.loading = false;
             state.error = payload.message
         })
 
-        
+
 
         // register 
         builder.addCase(RegisterUserReq, (state, payload) => {
@@ -96,6 +97,10 @@ const userReducer = createReducer(
 
         builder.addCase(allusername, (state, payload) => {
             state.usernames = payload.usernames;
+        })
+
+        builder.addCase(allchats, (state, payload) => {
+            state.chats = payload.chats;
         })
 
         builder.addCase("pagechange", (state) => {

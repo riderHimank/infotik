@@ -8,6 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebaseConfig'
 import tw from '../customtwrnc'
 import { COLORS } from '../constants'
+import ReelCard from "../components/ReelCard"
+import { useSelector } from 'react-redux'
 
 const Chat = () => {
 
@@ -134,6 +136,18 @@ const Chat = () => {
             });
         }
     }, [chat, navigation]);
+
+    const { posts } = useSelector(state => state.user);
+
+    const onVideoPress = (post) => {
+        // console.log(post);
+        let copy = JSON.parse(JSON.stringify(posts));
+        copy = copy.filter(item => item.uid != post.uid)
+        copy.splice(0, 0, post);
+        // console.log(copy);
+        navigation.navigate('userPosts', { posts: copy, profile: true })
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.9)' }}>
             {messages.length === 0 && <View style={tw`flex-1 justify-center items-center mt-[50%]`}>
@@ -152,6 +166,10 @@ const Chat = () => {
                 isLoadingEarlier
                 renderLoading={() => <ActivityIndicator size="small" color="blue" style={tw`mt-2`} />}
                 renderAvatar={renderImage}
+                renderMessageVideo={props => {
+                    // console.log(props.currentMessage);
+                    return (<ReelCard description={""} media={[{}, props.currentMessage?.post?.media[1]]} onPress={() => onVideoPress(props.currentMessage.post)} />)
+                }}
                 scrollToBottom
             />}
         </SafeAreaView>
