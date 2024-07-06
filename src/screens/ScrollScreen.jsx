@@ -13,8 +13,8 @@ const ScrollScreen = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllChats());
     dispatch(getPost());
+    dispatch(getAllChats());
   }, [])
 
   useEffect(() => {
@@ -30,6 +30,7 @@ const ScrollScreen = () => {
         post.hashtags.some(hashtag => keywords.includes(hashtag))
         //  each post has a 'hashtags' array
       );
+      // const shuffledFilteredPosts = shuffleArray(filtered);
       setFilteredPosts(filtered);
       console.log(`Filtered posts length: ${filtered.length}`);
     };
@@ -39,6 +40,14 @@ const ScrollScreen = () => {
       filterPostsByKeywords();
     }
   }, [posts]);
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
   return (
     <View>
       <Scroller posts={filteredPosts} change={change} profile={false} />

@@ -9,8 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../firebaseConfig'
 import { COLORS } from '../constants'
 import tw from '../customtwrnc'
-import { getUserById, getUserByQuery } from '../redux/actions/user'
-import { useSelector } from 'react-redux'
+import { getAllChats, getUserById, getUserByQuery } from '../redux/actions/user'
+import { useDispatch, useSelector } from 'react-redux'
 
 const ChatScreen = () => {
     const [currentUser, setCurrentUser] = useState(null);
@@ -19,8 +19,9 @@ const ChatScreen = () => {
     const [isSearching, setSearching] = useState(false);
     const [searchId, setSearchId] = useState("");
     const [searchUser, setSearchUser] = useState(null);
+    const dispatch = useDispatch();
 
-    const x = useSelector(state => state.user);
+    // const x = useSelector(state => state.user);
     // console.log(x.chats);
 
 
@@ -29,26 +30,26 @@ const ChatScreen = () => {
             try {
                 const cur = await getUserById(FIREBASE_AUTH.currentUser.uid);
                 setCurrentUser(cur);
-                setChats(x.chats);
+                // setChats(x.chats);
             } catch (e) {
                 console.log(e);
             }
         };
 
-        // const fetchChats = async () => {
-        //     try {
-        //         const q = query(collection(FIREBASE_DB, 'chats'), or(where("user1", "==", FIREBASE_AUTH.currentUser.uid), where("user2", "==", FIREBASE_AUTH.currentUser.uid)));
-        //         let data = [];
-        //         const d = await getDocs(q);
-        //         d.forEach((doc) => data.push(doc.data()));
-        //         setChats(data);
-        //     } catch (e) {
-        //         console.log(e);
-        //     }
-        // };
+        const fetchChats = async () => {
+            try {
+                const q = query(collection(FIREBASE_DB, 'chats'), or(where("user1", "==", FIREBASE_AUTH.currentUser.uid), where("user2", "==", FIREBASE_AUTH.currentUser.uid)));
+                let data = [];
+                const d = await getDocs(q);
+                d.forEach((doc) => data.push(doc.data()));
+                setChats(data);
+            } catch (e) {
+                console.log(e);
+            }
+        };
 
         fetchCurrent();
-        // fetchChats();
+        fetchChats();
     }, [chats]);
 
     const [searchquery, setsearchquery] = useState("");

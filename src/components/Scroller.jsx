@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import useMaterialNavBarHeight from '../hooks/useMaterialNavBarHeight';
 import PostSingle from './post';
 
-export default function Scroller({ posts: allPosts, change, profile, currentIndex }) {
+export default function Scroller({ posts: allPosts, change, profile, currentIndex, comingFromChat }) {
     const [posts, setPosts] = useState(allPosts);
     const isScrollTab = useRef(true);
     const mediaRefs = useRef([]);
@@ -73,8 +73,9 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
     const [followedUsers, setFollowedUsers] = useState(new Set());
     const renderItem = ({ item, index }) => {
         return (
+
             <View style={{ height: feedItemHeight, backgroundColor: 'black' }}>
-                <PostSingle followedUsers={followedUsers}
+                <PostSingle comingFromChat={comingFromChat} followedUsers={followedUsers}
                     setFollowedUsers={setFollowedUsers} item={item} key={item.id} ref={ref => (mediaRefs.current[item.id] = ref)} />
             </View>
         );

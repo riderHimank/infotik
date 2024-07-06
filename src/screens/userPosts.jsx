@@ -14,6 +14,7 @@ export const UserPosts = ({ route }) => {
   }, [route.params.posts])
 
   const currentIndex = route.params.currentIndex;
+  comingFromChat = route.params.comingFromChat;
 
 
 
@@ -23,7 +24,7 @@ export const UserPosts = ({ route }) => {
   }, [posts])
   return (
     <View>
-      <Scroller posts={route.params.posts} currentIndex={currentIndex} change={change} profile={true} />
+      <Scroller posts={route.params.posts} currentIndex={currentIndex} change={change} profile={true} comingFromChat={comingFromChat} />
     </View>
   )
 }

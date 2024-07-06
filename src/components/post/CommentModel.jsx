@@ -8,6 +8,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../../firebaseConfig';
 import tw from '../../customtwrnc';
 import { getUserById } from '../../redux/actions/user';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CommentModel = (({ post, isVisible, onClose }) => {
 
@@ -104,7 +105,7 @@ const CommentModel = (({ post, isVisible, onClose }) => {
       transparent={true}
       onRequestClose={onClose}
     >
-      <View style={tw`flex-1 justify-end items-center`}>
+      <SafeAreaView style={tw`flex-1 justify-end items-center`}>
         <View style={tw`w-full h-full max-h-[81%] bg-black `}>
           {isLoading ? (
             <View style={tw`flex-1 justify-center items-center`}>
@@ -203,7 +204,7 @@ const CommentModel = (({ post, isVisible, onClose }) => {
 
             )}
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
 
   )
