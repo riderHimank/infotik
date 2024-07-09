@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
-  Linking,
   Platform,
   Text,
   TouchableOpacity,
@@ -32,6 +31,7 @@ import {
   followUser,
   getUserById,
 } from "../../redux/actions/user";
+import { handleLinkOpen, isValidUrl } from "../../utils/utils";
 import ShareModal from "../ShareModal";
 import CommentModel from "./CommentModel";
 import styles from "./styles";
@@ -54,8 +54,6 @@ export const PostSingle = forwardRef(
     const timeoutref = React.useRef(null);
     const [isLoading, setIsLoading] = React.useState(true);
     const [user, setUser] = useState(null);
-    const [longPressTimer, setLongPressTimer] = useState(null);
-    const [videoStop, setVideoStop] = useState(false);
     const [isLike, setIsLike] = useState(false);
     const [likesCount, setLikesCount] = useState(0);
     const [likeLoading, setLikeLoading] = useState(false);
@@ -66,6 +64,10 @@ export const PostSingle = forwardRef(
     const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
     const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
     const [ShareModalOpen, setShareModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const { followedUsers, setFollowedUsers } = props;
+    const isFollowing = followedUsers.has(item.creator);
+
     useImperativeHandle(parentRef, () => ({
       play,
       unload,
@@ -133,24 +135,20 @@ export const PostSingle = forwardRef(
       }
     };
 
-    const handleOpen = (link) => {
-      Linking.openURL(link);
-    };
-
-    const handlePressIn = () => {
-      const timer = setTimeout(async () => {
-        await video.current.pauseAsync();
-        setVideoStop(true);
-      }, 1000);
-      setLongPressTimer(timer);
-    };
-
-    const handlePressOut = async () => {
-      if (longPressTimer) {
-        clearTimeout(longPressTimer);
+    const togglePlayPause = async () => {
+      if (video.current == null) {
+        return;
       }
-      await video.current.playAsync();
-      setVideoStop(false);
+      const status = await video.current.getStatusAsync();
+      if (status.isPlaying) {
+        setShowPopup(true);
+        await video.current.pauseAsync();
+      } else {
+        setShowPopup(true);
+        await video.current.playAsync();
+      }
+      setShowPopup(false);
+      // setShowPopup(!showPopup);
     };
 
     useEffect(() => {
@@ -186,9 +184,6 @@ export const PostSingle = forwardRef(
     const OpenComments = () => {
       setIsCommentModalVisible(!isCommentModalVisible);
     };
-    const closeModal = () => {
-      setIsCommentModalVisible(!isCommentModalVisible);
-    };
 
     const closeShareModal = () => {
       setShareModal(false);
@@ -203,25 +198,12 @@ export const PostSingle = forwardRef(
         video.current.setIsMutedAsync(!mute);
       }
       setMute((prev) => !prev);
-      setShowPopup(true);
       if (timeoutref.current) {
         clearTimeout(timeoutref);
       }
-      timeoutref.current = setTimeout(() => {
-        setShowPopup(false);
-      }, 500);
+      timeoutref.current = setTimeout(() => {}, 500);
       console.log("muting...");
     };
-
-    const handleMuteToggleLong = () => {
-      setShowPopup(false);
-      video.current.setIsMutedAsync(false);
-    };
-
-    const [loading, setLoading] = useState(false);
-
-    const { followedUsers, setFollowedUsers } = props;
-    const isFollowing = followedUsers.has(item.creator);
 
     useEffect(() => {
       (async function () {
@@ -239,7 +221,6 @@ export const PostSingle = forwardRef(
 
     const handleFollow = async () => {
       if (loading) {
-        console.log("loading...");
         return;
       }
       setLoading(true);
@@ -255,15 +236,6 @@ export const PostSingle = forwardRef(
     };
 
     const { chats } = useSelector((state) => state.user);
-
-    function isValidUrl(string) {
-      try {
-        new URL(string);
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
 
     return (
       <>
@@ -286,28 +258,21 @@ export const PostSingle = forwardRef(
         )}
 
         {showPopup && (
-          <TouchableWithoutFeedback onPress={handleMuteToggle}>
+          <TouchableWithoutFeedback>
             <View
               style={{
-                justifyContent: "center",
-                alignItems: "center",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 zIndex: 10,
                 position: "absolute",
-                bottom: 0,
-                top: 0,
-                right: 0,
-                left: 0,
+                top: "50%",
+                left: "50%",
+                borderRadius: 9999,
               }}
             >
               <View style={tw`p-2 bg-black/50 rounded-full`}>
-                <Feather
-                  name={mute ? "volume-x" : "volume-2"}
-                  size={30}
-                  color={"white"}
-                />
+                <Feather name="play" size={24} color="white" />
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -338,176 +303,178 @@ export const PostSingle = forwardRef(
           posterStyle={{ resizeMode: "cover", height: "100%" }}
           onReadyForDisplay={handleReadyForDisplay}
         />
-        <TouchableWithoutFeedback
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          onPress={handleMuteToggle}
-          onLongPress={handleMuteToggleLong}
-        >
+        <TouchableWithoutFeedback onPress={togglePlayPause}>
           <View
             style={tw`absolute bottom-0 left-0 right-0 top-0 justify-end z-2`}
           >
-            {!videoStop && (
-              <>
-                {/* // like , comment and share */}
-                <View style={tw`py-2 px-2 flex gap-2 items-end`}>
-                  <View style={tw`flex gap-0 items-center`}>
-                    <TouchableOpacity onPress={() => HandleLike(item.id)}>
-                      {isLike ? (
-                        <Image
-                          source={require("../../../assets/heartfill.png")}
-                          style={{
-                            width: 31,
-                            resizeMode: "contain",
-                            marginBottom: 1,
-                          }}
-                        />
-                      ) : (
-                        <SimpleLineIcons
-                          name="heart"
-                          size={30}
-                          resizeMode="contain"
-                          color="#fff"
-                        />
-                      )}
-                    </TouchableOpacity>
-                    <Text style={tw`text-white text-sm font-montserrat`}>
-                      {likesCount}
-                    </Text>
-                  </View>
-                  <View style={tw`flex gap-0 items-center`}>
-                    <TouchableOpacity onPress={OpenComments}>
-                      <Feather
-                        name="message-circle"
-                        color="#fff"
-                        size={31}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                    <Text style={tw`text-white text-sm font-montserrat`}>
-                      {item.commentsCount}
-                    </Text>
-                  </View>
-                  <View style={tw`flex gap-0 items-center`}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setShareModal(true);
-                      }}
-                    >
-                      <Feather
-                        color="#fff"
-                        size={28}
-                        resizeMode="contain"
-                        name="send"
-                      />
-                    </TouchableOpacity>
-                    <Text style={tw`text-white text-sm font-montserrat`}>
-                      Share
-                    </Text>
-                  </View>
-                </View>
-                {/* // profile pic, username and follow button */}
+            <>
+              {/* // volume, like , comment and share */}
+              <View style={tw`py-2 px-2 flex gap-2 items-end`}>
                 <View
-                  style={tw`px-4 flex-row justify-start items-center gap-3 `}
+                  style={tw`p-1 bg-black/50 rounded-full flex gap-0 items-center `}
                 >
-                  <TouchableOpacity
-                    style={tw`flex-row items-center gap-2`}
-                    onPress={handleProfile}
-                  >
-                    {user?.photoURL &&
-                    isValidUrl(user?.photoURL) &&
-                    !imageFailedToLoad ? (
+                  <TouchableWithoutFeedback onPress={handleMuteToggle}>
+                    <Feather
+                      name={mute ? "volume-x" : "volume-2"}
+                      size={24}
+                      color={"white"}
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
+                <View style={tw`flex gap-0 items-center`}>
+                  <TouchableOpacity onPress={() => HandleLike(item.id)}>
+                    {isLike ? (
                       <Image
-                        source={{
-                          uri:
-                            Platform.OS === "web"
-                              ? "../../../assets/icon.png"
-                              : user?.photoURL,
-                        }}
+                        source={require("../../../assets/heartfill.png")}
                         style={{
-                          width: 35,
-                          height: 35,
+                          width: 31,
                           resizeMode: "contain",
-                          marginBottom: 5,
-                          borderRadius: 9999,
-                          marginBottom: 8,
+                          marginBottom: 1,
                         }}
-                        onError={() => setImageFailedToLoad(true)}
                       />
                     ) : (
-                      <Avatar.Icon
-                        size={36}
-                        backgroundColor={COLORS.secondary}
-                        icon={"account"}
+                      <SimpleLineIcons
+                        name="heart"
+                        size={30}
+                        resizeMode="contain"
+                        color="#fff"
                       />
                     )}
-                    <Text style={tw`text-white text-base font-semibold`}>
-                      {user?.username}
-                    </Text>
                   </TouchableOpacity>
-
+                  <Text style={tw`text-white text-sm font-montserrat`}>
+                    {likesCount}
+                  </Text>
+                </View>
+                <View style={tw`flex gap-0 items-center`}>
+                  <TouchableOpacity onPress={OpenComments}>
+                    <Feather
+                      name="message-circle"
+                      color="#fff"
+                      size={31}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                  <Text style={tw`text-white text-sm font-montserrat`}>
+                    {item.commentsCount}
+                  </Text>
+                </View>
+                <View style={tw`flex gap-0 items-center`}>
                   <TouchableOpacity
-                    style={tw` px-1 rounded-md border-2 border-white flex flex-row items-center gap-1 ${
-                      isFollowing ? `bg-transparent text-white` : ""
-                    }`}
-                    onPress={handleFollow}
-                    disabled={loading}
+                    onPress={() => {
+                      setShareModal(true);
+                    }}
                   >
-                    <Text style={tw`text-white text-base font-bold `}>
-                      {isFollowing ? "Following" : "Follow"}
-                    </Text>
-                    {loading && (
-                      <ActivityIndicator size="small" color="#FFFFFF" />
-                    )}
+                    <Feather
+                      color="#fff"
+                      size={28}
+                      resizeMode="contain"
+                      name="send"
+                    />
                   </TouchableOpacity>
+                  <Text style={tw`text-white text-sm font-montserrat`}>
+                    Share
+                  </Text>
                 </View>
-                {/* hashtags */}
-                <View style={tw`py-2 px-4`}>
-                  <FlatList
-                    key={item}
-                    data={item.hashtags}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => item.key || String(index)}
-                    horizontal={true} // Set horizontal to true
-                  />
-                </View>
-                {/* news description newslink */}
-                <View
-                  style={tw`flex flex-row items-center gap-2 border-t border-b border-[${COLORS.secondary}] pl-4 bg-black/50`}
+              </View>
+              {/* // profile pic, username and follow button */}
+              <View style={tw`px-4 flex-row justify-start items-center gap-3 `}>
+                <TouchableOpacity
+                  style={tw`flex-row items-center gap-2`}
+                  onPress={handleProfile}
                 >
-                  <Text
-                    style={tw`text-sm text-[${COLORS.secondary}] font-montserrat`}
-                  >
-                    News
+                  {user?.photoURL &&
+                  isValidUrl(user?.photoURL) &&
+                  !imageFailedToLoad ? (
+                    <Image
+                      source={{
+                        uri:
+                          Platform.OS === "web"
+                            ? "../../../assets/icon.png"
+                            : user?.photoURL,
+                      }}
+                      style={{
+                        width: 35,
+                        height: 35,
+                        resizeMode: "contain",
+                        marginBottom: 5,
+                        borderRadius: 9999,
+                        marginBottom: 8,
+                      }}
+                      onError={() => setImageFailedToLoad(true)}
+                    />
+                  ) : (
+                    <Avatar.Icon
+                      size={36}
+                      backgroundColor={COLORS.secondary}
+                      icon={"account"}
+                    />
+                  )}
+                  <Text style={tw`text-white text-base font-semibold`}>
+                    {user?.username}
                   </Text>
-                  <Text
-                    style={tw`text-[10px] font-light text-white flex-1 `}
-                    numberOfLines={3}
-                  >
-                    {item.description}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={tw` px-1 rounded-md border-2 border-white flex flex-row items-center gap-1 ${
+                    isFollowing ? `bg-transparent text-white` : ""
+                  }`}
+                  onPress={handleFollow}
+                  disabled={loading}
+                >
+                  <Text style={tw`text-white text-base font-bold `}>
+                    {isFollowing ? "Following" : "Follow"}
                   </Text>
-                  <TouchableOpacity onPress={() => handleOpen(item.newslink)}>
-                    <LinearGradient
-                      colors={["#53C8D8", "#668AF7"]}
-                      style={tw`py-2`}
-                    >
-                      <View style={tw`w-8 flex justify-center items-center`}>
-                        <Feather
-                          name={"chevron-right"}
-                          size={20}
-                          color={"white"}
-                        />
-                      </View>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
+                  {loading && (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  )}
+                </TouchableOpacity>
+              </View>
+              {/* hashtags */}
+              <View style={tw`py-2 px-4`}>
+                <FlatList
+                  key={item}
+                  data={item.hashtags}
+                  renderItem={renderItem}
+                  keyExtractor={(item, index) => item.key || String(index)}
+                  horizontal={true} // Set horizontal to true
+                />
+              </View>
+              {/* news description newslink */}
+              <View
+                style={tw`flex flex-row items-center gap-2 border-t border-b border-[${COLORS.secondary}] pl-4 bg-black/50`}
+              >
+                <Text
+                  style={tw`text-sm text-[${COLORS.secondary}] font-montserrat`}
+                >
+                  News
+                </Text>
+                <Text
+                  style={tw`text-[10px] font-light text-white flex-1 `}
+                  numberOfLines={3}
+                >
+                  {item.description}
+                </Text>
+                <TouchableOpacity onPress={() => handleLinkOpen(item.newslink)}>
+                  <LinearGradient
+                    colors={["#53C8D8", "#668AF7"]}
+                    style={tw`py-2`}
+                  >
+                    <View style={tw`w-8 flex justify-center items-center`}>
+                      <Feather
+                        name={"chevron-right"}
+                        size={20}
+                        color={"white"}
+                      />
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            </>
 
             {isCommentModalVisible && (
               <CommentModel
                 isVisible={isCommentModalVisible}
-                onClose={closeModal}
+                onClose={OpenComments}
                 post={item}
               />
             )}

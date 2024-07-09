@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Button from '../components/Button'
 import * as ImagePicker from 'expo-image-picker'
 import { Icon } from 'react-native-paper'
+import { isValidUrl } from '../utils/utils'
 
 
 const allKeyword = [
@@ -149,14 +150,7 @@ export default function SavePostScreen(props) {
         handleCheckUrl(newslink);
     }, [newslink]);
     const [isValid, setIsValid] = useState(false);
-    const isValidUrl = (url) => {
-        try {
-            new URL(url);
-            return true;
-        } catch (_) {
-            return false;
-        }
-    };
+
 
     const handleCheckUrl = (url) => {
         setIsValid(isValidUrl(url));

@@ -1,18 +1,12 @@
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import {
-  Dimensions,
-  Linking,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import Toast from "react-native-toast-message";
+import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../../../constants";
 import tw from "../../../customtwrnc";
 import { logout } from "../../../redux/actions/user";
+import { handleLinkOpen } from "../../../utils/utils";
 import styles from "./styles";
 const window = Dimensions.get("window");
 
@@ -40,18 +34,6 @@ export default function NavBarGeneral(
     dispatch({ type: "setOpen", open: true });
   };
 
-  const handleLinkOpen = (link) => {
-    try {
-      Linking.openURL(link);
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: "Error opening link!",
-        text2: "",
-        text1Style: tw`text-[14px] text-red-600]`,
-      });
-    }
-  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
