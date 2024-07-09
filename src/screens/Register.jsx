@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, SafeAreaView, ScrollView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import FbLogo from '../../assets/fb-icon.png';
 import GoogleLogo from '../../assets/google_icon.png';
@@ -11,6 +11,7 @@ import SocialButton from '../components/SocialButton';
 import { COLORS } from '../constants';
 import tw from '../customtwrnc';
 import { configureGoogleSignIn, getUsername, GoogleSignUp, register, saveUserField } from '../redux/actions/user';
+import Toast from 'react-native-toast-message';
 
 
 const Register = () => {
@@ -62,13 +63,25 @@ const Register = () => {
             }
         } catch (error) {
             setloading(false);
-            ToastAndroid.show('Google sign in failed.', ToastAndroid.SHORT);
+            Toast.show({
+                type: "error",
+                text1: "Google Sign in failed!",
+                text2: 'Please try again',
+                text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+                text2Style: tw`text-[12px] text-red-600`,
+            });
         }
     }
 
     const handleSetUsername = async () => {
         if (!username) {
-            ToastAndroid.show('Please enter a username.', ToastAndroid.SHORT);
+            Toast.show({
+                type: "error",
+                text1: "Username cannot be empty!",
+                text2: " Please enter a username",
+                text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+                text2Style: tw`text-[12px] text-red-600`,
+            });
             return;
         }
         setloading(true);
@@ -82,7 +95,13 @@ const Register = () => {
             });
         } else {
             setloading(false);
-            ToastAndroid.show('Username already taken.', ToastAndroid.SHORT);
+            Toast.show({
+                type: "error",
+                text1: "Username exists!",
+                text2: "Please enter a different username",
+                text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+                text2Style: tw`text-[12px] text-red-600`,
+            });
         }
     }
 
@@ -90,7 +109,13 @@ const Register = () => {
         setloading(true);
         if (!email || !password || !name) {
             setloading(false);
-            ToastAndroid.show('Please fill all fields.', ToastAndroid.SHORT);
+            Toast.show({
+                type: "error",
+                text1: "Incomplete fields",
+                text2: "Please fill all the fields",
+                text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+                text2Style: tw`text-[12px] text-red-600`,
+            });
             return
         }
         const res = await dispatch(register(email, password, name, username));
@@ -176,7 +201,13 @@ const Register = () => {
                                     text="Sign in with Facebook"
                                     textColor={'white'}
                                     onPress={() => {
-                                        ToastAndroid.show('Feature coming soon.', ToastAndroid.SHORT);
+                                        Toast.show({
+                                            type: "error",
+                                            text1: "Feature coming soon!",
+                                            text2: "This feature is not available yet!",
+                                            text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+                                            text2Style: tw`text-[12px] text-yellow-600`,
+                                        });
                                     }}
                                 />
                                 <View style={tw`flex flex-col items-center mt-6 gap-2`}>

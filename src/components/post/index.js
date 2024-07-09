@@ -10,8 +10,8 @@ import {
   FlatList,
   Image,
   Linking,
+  Platform,
   Text,
-  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -22,7 +22,7 @@ import { Feather, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Avatar } from "react-native-paper";
-import index from "uuid-random";
+import { useSelector } from "react-redux";
 import { COLORS } from "../../constants";
 import tw from "../../customtwrnc";
 import {
@@ -32,12 +32,9 @@ import {
   followUser,
   getUserById,
 } from "../../redux/actions/user";
+import ShareModal from "../ShareModal";
 import CommentModel from "./CommentModel";
 import styles from "./styles";
-import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
-import { addDoc, collection } from "firebase/firestore";
-import { useSelector } from "react-redux";
-import ShareModal from "../ShareModal";
 
 const renderItem = ({ item }) => (
   <TouchableOpacity>
@@ -421,7 +418,12 @@ export const PostSingle = forwardRef(
                     isValidUrl(user?.photoURL) &&
                     !imageFailedToLoad ? (
                       <Image
-                        source={{ uri: user?.photoURL }}
+                        source={{
+                          uri:
+                            Platform.OS === "web"
+                              ? "../../../assets/icon.png"
+                              : user?.photoURL,
+                        }}
                         style={{
                           width: 35,
                           height: 35,
@@ -462,7 +464,7 @@ export const PostSingle = forwardRef(
                 {/* hashtags */}
                 <View style={tw`py-2 px-4`}>
                   <FlatList
-                    key={index}
+                    key={item}
                     data={item.hashtags}
                     renderItem={renderItem}
                     keyExtractor={(item, index) => item.key || String(index)}

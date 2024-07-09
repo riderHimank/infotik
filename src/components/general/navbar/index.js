@@ -5,10 +5,10 @@ import {
   Dimensions,
   Linking,
   Text,
-  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../../../constants";
 import tw from "../../../customtwrnc";
@@ -44,7 +44,12 @@ export default function NavBarGeneral(
     try {
       Linking.openURL(link);
     } catch {
-      ToastAndroid.show("Error opening link", ToastAndroid.SHORT);
+      Toast.show({
+        type: "error",
+        text1: "Error opening link!",
+        text2: "",
+        text1Style: tw`text-[14px] text-red-600]`,
+      });
     }
   };
   return (

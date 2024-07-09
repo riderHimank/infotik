@@ -4,6 +4,7 @@ import { getAllChats, getCurrentUserKeywords, getPost } from '../redux/actions/u
 import Scroller from '../components/Scroller'
 import { Video, ResizeMode } from 'expo-av';
 import { useDispatch, useSelector } from 'react-redux';
+import tw from '../customtwrnc';
 // import { FIREBASE_AUTH } from '../../firebaseConfig';
 
 const ScrollScreen = () => {
@@ -31,7 +32,8 @@ const ScrollScreen = () => {
         //  each post has a 'hashtags' array
       );
       // const shuffledFilteredPosts = shuffleArray(filtered);
-      setFilteredPosts(filtered);
+      const limitedPosts = filtered.slice(0, 8);
+      setFilteredPosts(filtered); //set to limitedPosts while testing
       console.log(`Filtered posts length: ${filtered.length}`);
     };
 
@@ -49,7 +51,7 @@ const ScrollScreen = () => {
     return array;
   }
   return (
-    <View>
+    <View style={tw`flex flex-1`}>
       <Scroller posts={filteredPosts} change={change} profile={false} />
     </View>
   )

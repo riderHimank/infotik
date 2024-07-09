@@ -1,13 +1,12 @@
-import { ActivityIndicator, FlatList, Image, Modal, Text, ToastAndroid, TouchableOpacity, View } from "react-native";
-import tw from "../customtwrnc";
-import { ScrollView } from "react-native-gesture-handler";
-import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
-import { Avatar } from "react-native-paper";
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
-import uuid from "uuid-random";
 import { addDoc, collection } from "firebase/firestore";
+import { FlatList, Image, Modal, Text, TouchableOpacity, View } from "react-native";
+import { Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import uuid from "uuid-random";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
+import tw from "../customtwrnc";
+import Toast from "react-native-toast-message";
 const ShareModal = ({ isVisible, onClose, chats, itemm }) => {
     const currentUser = FIREBASE_AUTH.currentUser;
     const renderItem = ({ item }) => (
@@ -54,7 +53,11 @@ const ShareModal = ({ isVisible, onClose, chats, itemm }) => {
                 `chats/${item.chatId}/messages`
             );
             await addDoc(c, msg);
-            ToastAndroid.show('Post shared!.', ToastAndroid.SHORT);
+            Toast.show({
+                type: 'success',
+                text1: 'Post Shared!',
+                text2: ''
+            });
             console.log("done");
         } catch (r) {
             console.log(r);

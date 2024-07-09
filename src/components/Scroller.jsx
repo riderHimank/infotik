@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, StyleSheet, View } from 'react-native';
+import { Dimensions, FlatList, Platform, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import useMaterialNavBarHeight from '../hooks/useMaterialNavBarHeight';
 import PostSingle from './post';
@@ -44,7 +44,31 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
     }, [navigation]);
 
     const onViewableItemsChanged = useRef(({ changed }) => {
-        changed.forEach(element => {
+        if (Platform.OS === 'web') {
+            changed.forEach(element => {
+                const cell = mediaRefs.current[element.key];
+                if (cell) {
+                    if (element.isViewable) {
+                        // Stop all videos
+                        for (let index = 0; index < storeCellRef.current.length; index++) {
+                            const cell = storeCellRef.current[index];
+                            cell.stop();
+                        }
+                        // Clear the array
+                        storeCellRef.current = [];
+                        // Play the current video
+                        cell.play();
+                        currentVideoRes.current = cell;
+                        storeCellRef.current.push(cell);
+                    } else {
+                        cell.stop();
+                        // Remove the cell from the array
+                        storeCellRef.current = storeCellRef.current.filter(c => c !== cell);
+                    }
+                }
+            });
+        }
+        else changed.forEach(element => {
             const cell = mediaRefs.current[element.key];
             if (cell) {
                 if (element.isViewable && isScrollTab.current) {

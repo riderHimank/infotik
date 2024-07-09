@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Main from "./Main.jsx";
 import tw from "twrnc";
-import { Platform } from "react-native";
+import { Dimensions, Platform, StyleSheet } from "react-native";
 import { COLORS } from "./src/constants/index.js";
 import { store } from "./src/redux/index.js";
 import { Provider } from "react-redux";
@@ -12,6 +12,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar as RNStatusBar } from "react-native"; // Importing StatusBar from react-native
+import Toast from "react-native-toast-message";
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
@@ -30,14 +31,16 @@ export default function App() {
   const dynamicTopMargin =
     Platform.OS === "android" ? RNStatusBar.currentHeight : 0;
 
+  const webStyle = Platform.OS === "web" ? styles.web : {};
   return (
     <>
       <Provider store={store}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={[styles.rootView, webStyle]}>
           <MessageProvider>
             <SafeAreaProvider style={tw`mt-${dynamicTopMargin}px`}>
               <StatusBar style="light" backgroundColor={COLORS.primary} />
               <Main />
+              <Toast position="bottom" bottomOffset={40} />
             </SafeAreaProvider>
           </MessageProvider>
         </GestureHandlerRootView>
@@ -45,3 +48,15 @@ export default function App() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  rootView: {
+    flex: 1,
+  },
+  web: {
+    width: "100vw",
+    height: "100vh",
+    maxWidth: Dimensions.get("window").width,
+    maxHeight: Dimensions.get("window").height,
+  },
+});

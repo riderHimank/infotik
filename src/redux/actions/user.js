@@ -21,7 +21,7 @@ import {
 } from "firebase/firestore";
 import uuid from "uuid-random";
 
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+// import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
 import { saveMediaToStorage } from "../../utils/savepost";
 import {
@@ -43,80 +43,80 @@ import {
 } from "../ActionType";
 
 export const configureGoogleSignIn = () => {
-  GoogleSignin.configure({
-    webClientId:
-      "634179897850-5toavm1kcjormgh5ecn5e147hl3tgd2i.apps.googleusercontent.com",
-    scopes: [],
-    offlineAccess: true,
-  });
+  // GoogleSignin.configure({
+  //   webClientId:
+  //     "634179897850-5toavm1kcjormgh5ecn5e147hl3tgd2i.apps.googleusercontent.com",
+  //   scopes: [],
+  //   offlineAccess: true,
+  // });
 };
 
-export const GoogleSignUp = () => async (dispatch) => {
-  try {
-    dispatch({
-      type: RegisterUserReq,
-    });
-    await GoogleSignin.hasPlayServices();
-    const userInfo = await GoogleSignin.signIn();
-    // console.log("User info:", userInfo);
-    const { idToken, accessToken } = userInfo;
-    const googleCredential = GoogleAuthProvider.credential(
-      idToken,
-      accessToken
-    );
-    const userCredential = await signInWithCredential(
-      FIREBASE_AUTH,
-      googleCredential
-    );
-    // User is signed in
-    const user = userCredential.user;
-    // console.log("Firebase user:", user);
-    const ref = doc(collection(FIREBASE_DB, "user"), user.uid);
-    const userDoc = await getDoc(ref);
-    if (!userDoc.exists()) {
-      await setDoc(ref, {
-        ...JSON.parse(JSON.stringify(user)),
-        followingCount: 0,
-        followersCount: 0,
-        likesCount: 0,
-        displayName: user.displayName,
-        keywords: [],
-        username: user.email.split("@")[0], // Extract username from email
-      });
-      const usernameref = doc(collection(FIREBASE_DB, "username"), user.uid);
-      await setDoc(usernameref, {
-        username: user.email.split("@")[0], // Extract username from email
-      });
-    } else {
-      const data = {
-        user: userCredential._tokenResponse,
-        message: "User already exists",
-      };
-      dispatch({
-        type: RegisterUserSuc,
-        ...data,
-      });
-      return data;
-    }
+// export const GoogleSignUp = () => async (dispatch) => {
+//   try {
+//     dispatch({
+//       type: RegisterUserReq,
+//     });
+//     await GoogleSignin.hasPlayServices();
+//     const userInfo = await GoogleSignin.signIn();
+//     // console.log("User info:", userInfo);
+//     const { idToken, accessToken } = userInfo;
+//     const googleCredential = GoogleAuthProvider.credential(
+//       idToken,
+//       accessToken
+//     );
+//     const userCredential = await signInWithCredential(
+//       FIREBASE_AUTH,
+//       googleCredential
+//     );
+//     // User is signed in
+//     const user = userCredential.user;
+//     // console.log("Firebase user:", user);
+//     const ref = doc(collection(FIREBASE_DB, "user"), user.uid);
+//     const userDoc = await getDoc(ref);
+//     if (!userDoc.exists()) {
+//       await setDoc(ref, {
+//         ...JSON.parse(JSON.stringify(user)),
+//         followingCount: 0,
+//         followersCount: 0,
+//         likesCount: 0,
+//         displayName: user.displayName,
+//         keywords: [],
+//         username: user.email.split("@")[0], // Extract username from email
+//       });
+//       const usernameref = doc(collection(FIREBASE_DB, "username"), user.uid);
+//       await setDoc(usernameref, {
+//         username: user.email.split("@")[0], // Extract username from email
+//       });
+//     } else {
+//       const data = {
+//         user: userCredential._tokenResponse,
+//         message: "User already exists",
+//       };
+//       dispatch({
+//         type: RegisterUserSuc,
+//         ...data,
+//       });
+//       return data;
+//     }
 
-    const data = {
-      user: userCredential._tokenResponse,
-      message: "Register Successfully",
-    };
-    dispatch({
-      type: RegisterUserSuc,
-      ...data,
-    });
-    return true;
-  } catch (error) {
-    dispatch({
-      type: RegisterUserFai,
-      message: "Google Registration Failed",
-    });
-    console.log(error.message);
-    return false;
-  }
-};
+//     const data = {
+//       user: userCredential._tokenResponse,
+//       message: "Register Successfully",
+//     };
+//     dispatch({
+//       type: RegisterUserSuc,
+//       ...data,
+//     });
+//     return true;
+//   } catch (error) {
+//     dispatch({
+//       type: RegisterUserFai,
+//       message: "Google Registration Failed",
+//     });
+//     console.log(error.message);
+//     return false;
+//   }
+// };
 
 export const login = (email, password) => async (dispatch) => {
   try {
@@ -209,7 +209,7 @@ export const logout = () => async (dispatch) => {
       type: LogoutUserReq,
     });
     await signOut(FIREBASE_AUTH);
-    await GoogleSignin.signOut();
+    // await GoogleSignin.signOut();
     console.log("User logged out successfully");
     // Optionally, you can perform additsional actions after logout
     dispatch({
