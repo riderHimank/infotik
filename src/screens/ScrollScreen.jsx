@@ -32,8 +32,8 @@ const ScrollScreen = () => {
         //  each post has a 'hashtags' array
       );
       // const shuffledFilteredPosts = shuffleArray(filtered);
-      const limitedPosts = filtered.slice(0, 8);
-      setFilteredPosts(filtered); //set to limitedPosts while testing
+      const limitedPosts = filtered.slice(0, 5);
+      setFilteredPosts(limitedPosts); //set to limitedPosts while testing
       console.log(`Filtered posts length: ${filtered.length}`);
     };
 

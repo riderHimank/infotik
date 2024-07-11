@@ -43,38 +43,76 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
         };
     }, [navigation]);
 
-    const onViewableItemsChanged = useRef(({ changed }) => {
+    const onViewableItemsChanged = useRef(({ changed, viewableItems }) => {
         if (Platform.OS === 'web') {
             changed.forEach(element => {
-                const cell = mediaRefs.current[element.key];
-                if (cell) {
-                    if (element.isViewable) {
-                        // Stop all videos
+                // APPROACH 1
+                // const cell = mediaRefs.current[element.key];
+                // const viewable = viewableItems.find(item => item.isViewable);
+                // console.log("Element", element)
+                // console.log('Viewableitem', viewable.item);
+                // console.log(viewableItems);
+                // if (cell) {
+                //     if (element.isViewable && isScrollTab.current) {
+                //         // Stop all videos
+                //         for (let index = 0; index < storeCellRef.current.length; index++) {
+                //             const cell = storeCellRef.current[index];
+                //             console.log('stopping');
+                //             cell.stop();
+                //         }
+                //         // Clear the array
+                //         storeCellRef.current = [];
+                //         // Play the current video
+                //         cell.play();
+                //         currentVideoRes.current = cell;
+                //         storeCellRef.current.push(cell);
+                //     } else {
+                //         cell.stop();
+                //         console.log('stopping in else');
+                //         // Remove the cell from the array
+                //         storeCellRef.current = storeCellRef.current.filter(c => c !== cell);
+                //     }
+                // }
+
+                // -ABOVE ONE PLAYS SIMULTANEOUSLY BELOW ONE DOESNT----------------------
+                // APPROACH 2
+
+                const viewable = viewableItems.find(item => item.isViewable);
+                if (viewable) {
+                    const cell = mediaRefs.current[viewable.item.id];
+                    if (cell) {
+                        console.log('cell', cell);
+                        console.log('element', element);
+                        console.log('viewableItems', viewableItems);
+                        console.log(viewable);
+                        // console.log('Viewableitem', viewable.item);
+                        console.log(viewableItems);
                         for (let index = 0; index < storeCellRef.current.length; index++) {
+                            console.log('stopping');
                             const cell = storeCellRef.current[index];
                             cell.stop();
                         }
-                        // Clear the array
-                        storeCellRef.current = [];
-                        // Play the current video
+                        // Stop the currently playing video if it's not the same as the new one
+
+                        // Play the new video
                         cell.play();
+                        // Update the ref to the currently playing video
                         currentVideoRes.current = cell;
-                        storeCellRef.current.push(cell);
-                    } else {
-                        cell.stop();
-                        // Remove the cell from the array
-                        storeCellRef.current = storeCellRef.current.filter(c => c !== cell);
                     }
                 }
             });
         }
         else changed.forEach(element => {
             const cell = mediaRefs.current[element.key];
+            console.log('cell', cell);
+            console.log('element', element);
+            console.log('viewableItems', viewableItems);
             if (cell) {
                 if (element.isViewable && isScrollTab.current) {
                     // Stop all videos
                     for (let index = 0; index < storeCellRef.current.length; index++) {
                         const cell = storeCellRef.current[index];
+                        console.log('stopping');
                         cell.stop();
                     }
                     // Clear the array
@@ -85,6 +123,7 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
                     storeCellRef.current.push(cell);
                 } else {
                     cell.stop();
+                    console.log('stopping in else');
                     // Remove the cell from the array
                     storeCellRef.current = storeCellRef.current.filter(c => c !== cell);
                 }
@@ -120,7 +159,7 @@ export default function Scroller({ posts: allPosts, change, profile, currentInde
             maxToRenderPerBatch={2}
             removeClippedSubviews
             viewabilityConfig={{
-                itemVisiblePercentThreshold: 50
+                itemVisiblePercentThreshold: Platform.OS === 'web' ? 100 : 50
             }}
             pagingEnabled
             decelerationRate={'normal'}
