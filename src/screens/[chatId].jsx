@@ -145,7 +145,7 @@ const Chat = () => {
         copy = copy.filter(item => item.uid != post.uid)
         copy.splice(0, 0, post);
         // console.log(copy);
-        navigation.navigate('userPosts', { posts: copy, profile: true })
+        navigation.navigate('userPosts', { posts: copy, profile: true, comingFromChat: true })
     }
 
     return (

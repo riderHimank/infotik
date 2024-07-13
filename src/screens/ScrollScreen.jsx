@@ -4,6 +4,7 @@ import { getAllChats, getCurrentUserKeywords, getPost } from '../redux/actions/u
 import Scroller from '../components/Scroller'
 import { Video, ResizeMode } from 'expo-av';
 import { useDispatch, useSelector } from 'react-redux';
+import tw from '../customtwrnc';
 // import { FIREBASE_AUTH } from '../../firebaseConfig';
 
 const ScrollScreen = () => {
@@ -13,8 +14,8 @@ const ScrollScreen = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllChats());
     dispatch(getPost());
+    dispatch(getAllChats());
   }, [])
 
   useEffect(() => {
@@ -30,7 +31,9 @@ const ScrollScreen = () => {
         post.hashtags.some(hashtag => keywords.includes(hashtag))
         //  each post has a 'hashtags' array
       );
-      setFilteredPosts(filtered);
+      // const shuffledFilteredPosts = shuffleArray(filtered);
+      const limitedPosts = filtered.slice(0, 5);
+      setFilteredPosts(limitedPosts); //set to limitedPosts while testing
       console.log(`Filtered posts length: ${filtered.length}`);
     };
 
@@ -39,8 +42,16 @@ const ScrollScreen = () => {
       filterPostsByKeywords();
     }
   }, [posts]);
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
   return (
-    <View>
+    <View style={tw`flex flex-1`}>
       <Scroller posts={filteredPosts} change={change} profile={false} />
     </View>
   )

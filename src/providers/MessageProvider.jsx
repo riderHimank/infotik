@@ -1,32 +1,43 @@
 import React, { useLayoutEffect } from 'react'
-import { ToastAndroid } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux'
 import { ClearError, ClearMessage } from '../redux/ActionType';
 import { loadme } from '../redux/actions/user';
+import Toast from 'react-native-toast-message';
 
-const MessageProvider = ({children}) => {
-    const {error, message} = useSelector(store => store.user);
+const MessageProvider = ({ children }) => {
+    const { error, message } = useSelector(store => store.user);
     const dispatch = useDispatch();
 
     useLayoutEffect(() => {
-        if(error){
-            ToastAndroid.show(error, ToastAndroid.SHORT);
-            dispatch({type: ClearError})
+        if (error) {
+            Toast.show({
+                type: 'error',
+                position: 'bottom',
+                text1: 'Error',
+                text2: error
+
+            })
+            dispatch({ type: ClearError })
         }
 
-        if(message){
-            ToastAndroid.show(message, ToastAndroid.SHORT);
-            dispatch({type: ClearMessage})
+        if (message) {
+            Toast.show({
+                type: 'success',
+                position: 'bottom',
+                text1: 'Success',
+                text2: message
+            })
+            dispatch({ type: ClearMessage })
         }
-        
-    },[error,message]);
+
+    }, [error, message]);
 
 
 
     useLayoutEffect(() => {
         dispatch(loadme());
-    },[])
-  return (children)
+    }, [])
+    return (children)
 }
 
 export default MessageProvider

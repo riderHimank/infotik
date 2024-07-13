@@ -209,7 +209,7 @@ export const logout = () => async (dispatch) => {
       type: LogoutUserReq,
     });
     await signOut(FIREBASE_AUTH);
-    await GoogleSignin.signOut();
+    // await GoogleSignin.signOut();
     console.log("User logged out successfully");
     // Optionally, you can perform additsional actions after logout
     dispatch({

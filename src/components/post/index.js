@@ -9,21 +9,19 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
-  Linking,
+  Platform,
   Text,
-  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import uuid from "uuid-random";
 // import { useUser } from '../../hooks/useUser'
 // import PostSingleOverlay from './overlay'
-import { Feather, SimpleLineIcons } from "@expo/vector-icons";
+import { Feather, Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Avatar } from "react-native-paper";
-import index from "uuid-random";
+import { useSelector } from "react-redux";
 import { COLORS } from "../../constants";
 import tw from "../../customtwrnc";
 import {
@@ -33,11 +31,10 @@ import {
   followUser,
   getUserById,
 } from "../../redux/actions/user";
+import { handleLinkOpen, isValidUrl } from "../../utils/utils";
+import ShareModal from "../ShareModal";
 import CommentModel from "./CommentModel";
 import styles from "./styles";
-import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
-import { addDoc, collection } from "firebase/firestore";
-import { useSelector } from "react-redux";
 
 const renderItem = ({ item }) => (
   <TouchableOpacity>
@@ -51,288 +48,203 @@ const renderItem = ({ item }) => (
   </TouchableOpacity>
 );
 
-export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
-  const video = React.useRef(null);
-  const timeoutref = React.useRef(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [user, setUser] = useState(null);
-  const [longPressTimer, setLongPressTimer] = useState(null);
-  const [videoStop, setVideoStop] = useState(false);
-  const [isLike, setIsLike] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
-  const [likeLoading, setLikeLoading] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const navigation = useNavigation();
-  const [mute, setMute] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
-  const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
-  useImperativeHandle(parentRef, () => ({
-    play,
-    unload,
-    stop,
-  }));
+export const PostSingle = forwardRef(
+  ({ item, comingFromChat, ...props }, parentRef) => {
+    const video = React.useRef(null);
+    const timeoutref = React.useRef(null);
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [user, setUser] = useState(null);
+    const [isLike, setIsLike] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+    const [likeLoading, setLikeLoading] = useState(false);
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+    const navigation = useNavigation();
+    const [mute, setMute] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [imageFailedToLoad, setImageFailedToLoad] = useState(false);
+    const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
+    const [ShareModalOpen, setShareModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const { followedUsers, setFollowedUsers } = props;
+    const isFollowing = followedUsers.has(item.creator);
 
-  useEffect(() => {
-    return () => {
-      console.log("unloading");
-      unload();
-    };
-  }, []);
+    useImperativeHandle(parentRef, () => ({
+      play,
+      unload,
+      stop,
+    }));
 
-  const handleLoadStart = () => {
-    setIsLoading(true);
-  };
-
-  const handleReadyForDisplay = () => {
-    setIsLoading(false);
-  };
-
-  const play = async () => {
-    if (video.current == null) {
-      return;
-    }
-
-    // if video is already playing return
-    const status = await video.current.getStatusAsync();
-    if (status?.isPlaying) {
-      return;
-    }
-    try {
-      await video.current.playAsync();
-    } catch (e) {
-      console.log("error", e.message);
-    }
-  };
-
-  const stop = async () => {
-    if (video.current == null) {
-      return;
-    }
-
-    // if video is already stopped return
-    const status = await video.current.getStatusAsync();
-    if (!status?.isPlaying) {
-      return;
-    }
-    try {
-      await video.current.stopAsync();
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const unload = async () => {
-    if (video.current == null) {
-      return;
-    }
-
-    try {
-      await video.current.unloadAsync();
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const handleOpen = (link) => {
-    Linking.openURL(link);
-  };
-
-  const handlePressIn = () => {
-    const timer = setTimeout(async () => {
-      await video.current.pauseAsync();
-      setVideoStop(true);
-    }, 1000);
-    setLongPressTimer(timer);
-  };
-
-  const handlePressOut = async () => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-    }
-    await video.current.playAsync();
-    setVideoStop(false);
-  };
-
-  useEffect(() => {
-    (async function () {
-      const user = await getUserById(item.creator);
-      const like = await checkLike(item.id);
-      setUser(user);
-      setIsLike(like);
-    })();
-  }, []);
-
-  useEffect(() => {
-    setLikesCount(item.likesCount);
-  }, [item]);
-
-  const HandleLike = async (id) => {
-    if (likeLoading) {
-      return;
-    }
-    setLikeLoading(true);
-    if (isLike) {
-      setIsLike(false);
-      setLikesCount((prev) => prev - 1);
-    } else {
-      setIsLike(true);
-      setLikesCount((prev) => prev + 1);
-    }
-
-    await LikePost(id);
-    setLikeLoading(false);
-  };
-
-  const OpenComments = () => {
-    setIsCommentModalVisible(!isCommentModalVisible);
-  };
-  const closeModal = () => {
-    setIsCommentModalVisible(!isCommentModalVisible);
-  };
-
-  const handleProfile = () => {
-    stop();
-    navigation.navigate("profile", { uid: user.uid });
-  };
-
-  const handleMuteToggle = async () => {
-    if (video.current) {
-      video.current.setIsMutedAsync(!mute);
-    }
-    setMute((prev) => !prev);
-    setShowPopup(true);
-    if (timeoutref.current) {
-      clearTimeout(timeoutref);
-    }
-    timeoutref.current = setTimeout(() => {
-      setShowPopup(false);
-    }, 500);
-    console.log("muting...");
-  };
-
-  const handleMuteToggleLong = () => {
-    setShowPopup(false);
-    video.current.setIsMutedAsync(false);
-  };
-
-  const [loading, setLoading] = useState(false);
-
-  const { followedUsers, setFollowedUsers } = props;
-  const isFollowing = followedUsers.has(item.creator);
-
-  useEffect(() => {
-    (async function () {
-      if (user) {
-        const ans = await checkFollow(user.uid);
-        if (ans) {
-          followedUsers.add(user.uid);
-        } else {
-          followedUsers.delete(user.uid);
-        }
-        setFollowedUsers(new Set(followedUsers));
-      }
-    })();
-  }, [user]);
-
-  const handleFollow = async () => {
-    if (loading) {
-      console.log("loading...");
-      return;
-    }
-    setLoading(true);
-    const isCurrentlyFollowing = followedUsers.has(user.uid);
-    await followUser(user.uid, isCurrentlyFollowing);
-    if (isCurrentlyFollowing) {
-      followedUsers.delete(user.uid);
-    } else {
-      followedUsers.add(user.uid);
-    }
-    setFollowedUsers(new Set(followedUsers));
-    setLoading(false);
-  };
-
-  const { chats } = useSelector((state) => state.user);
-  const [selectedChat, setSelected] = useState({
-    chatId: "cqTfcyrYRtsVj5YfSwkF",
-    user1: "BkpFdGDh22b9sTfWCAIVf6qJ1Gs1",
-    user1Pic:
-      "https://firebasestorage.googleapis.com/v0/b/infotik-617ac.appspot.com/o/user%2FBkpFdGDh22b9sTfWCAIVf6qJ1Gs1%2Favatar?alt=media&token=6663ea23-2dbb-439b-8f7f-64420df59585",
-    user1displayName: "HImank Bohara",
-    user1username: "rider",
-    user2: "z9mkeMRTABcpMDXuPy8bDQQGVut2",
-    user2Pic:
-      "https://lh3.googleusercontent.com/a/ACg8ocLemtZLyJsdp9gHhNAjHTDWdFE4zMJc5Bd1PoBLB6IKE20A-A=s96-c",
-    user2displayName: "2405 KAPIL BADOKAR",
-    user2username: "kapil_badokar_ece",
-  });
-
-  const handleShare = async () => {
-    try {
-      const msg = {
-        _id: uuid(),
-        text: " ",
-        createdAt: new Date().toISOString(),
-        senderId: FIREBASE_AUTH.currentUser.uid,
-        receiverId:
-          FIREBASE_AUTH.currentUser.uid === selectedChat.user1
-            ? selectedChat.user2
-            : selectedChat.user1,
-        user: {
-          _id: FIREBASE_AUTH.currentUser.uid,
-        },
-        video: item.media[0],
-        post: JSON.parse(JSON.stringify(item)),
+    useEffect(() => {
+      return () => {
+        console.log("unloading");
+        unload();
       };
-      const c = collection(
-        FIREBASE_DB,
-        `chats/${selectedChat.chatId}/messages`
-      );
-      await addDoc(c, msg);
-      console.log("done");
-    } catch (r) {
-      console.log(r);
-    }
-  };
+    }, []);
 
-  function isValidUrl(string) {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
+    const handleLoadStart = () => {
+      setIsLoading(true);
+    };
 
-  return (
-    <>
-      {isLoading && (
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: COLORS.primary,
-            zIndex: 10,
-            position: "absolute",
-            bottom: 0,
-            top: 0,
-            right: 0,
-            left: 0,
-          }}
-        >
-          <ActivityIndicator size={79} color={COLORS.secondary} />
-        </View>
-      )}
+    const handleReadyForDisplay = () => {
+      setIsLoading(false);
+    };
 
-      {showPopup && (
-        <TouchableWithoutFeedback onPress={handleMuteToggle}>
+    const play = async () => {
+      if (video.current == null) {
+        return;
+      }
+
+      // if video is already playing return
+      const status = await video.current.getStatusAsync();
+      if (status?.isPlaying) {
+        return;
+      }
+      try {
+        await video.current.playAsync();
+      } catch (e) {
+        console.log("error", e.message);
+      }
+    };
+
+    const stop = async () => {
+      if (video.current == null) {
+        return;
+      }
+
+      // if video is already stopped return
+      const status = await video.current.getStatusAsync();
+      if (!status?.isPlaying) {
+        return;
+      }
+      try {
+        await video.current.stopAsync();
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    const unload = async () => {
+      if (video.current == null) {
+        return;
+      }
+
+      try {
+        await video.current.unloadAsync();
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    const togglePlayPause = async () => {
+      if (video.current == null) {
+        return;
+      }
+      const status = await video.current.getStatusAsync();
+      if (status.isPlaying) {
+        setShowPopup(true);
+        await video.current.pauseAsync();
+      } else {
+        setShowPopup(true);
+        await video.current.playAsync();
+      }
+      setShowPopup(false);
+      // setShowPopup(!showPopup);
+    };
+
+    useEffect(() => {
+      (async function () {
+        const user = await getUserById(item.creator);
+        const like = await checkLike(item.id);
+        setUser(user);
+        setIsLike(like);
+      })();
+    }, []);
+
+    useEffect(() => {
+      setLikesCount(item.likesCount);
+    }, [item]);
+
+    const HandleLike = async (id) => {
+      if (likeLoading) {
+        return;
+      }
+      setLikeLoading(true);
+      if (isLike) {
+        setIsLike(false);
+        setLikesCount((prev) => prev - 1);
+      } else {
+        setIsLike(true);
+        setLikesCount((prev) => prev + 1);
+      }
+
+      await LikePost(id);
+      setLikeLoading(false);
+    };
+
+    const OpenComments = () => {
+      setIsCommentModalVisible(!isCommentModalVisible);
+    };
+
+    const closeShareModal = () => {
+      setShareModal(false);
+    };
+    const handleProfile = () => {
+      stop();
+      navigation.navigate("profile", { uid: user.uid });
+    };
+
+    const handleMuteToggle = async () => {
+      if (video.current) {
+        video.current.setIsMutedAsync(!mute);
+      }
+      setMute((prev) => !prev);
+      if (timeoutref.current) {
+        clearTimeout(timeoutref);
+      }
+      timeoutref.current = setTimeout(() => {}, 500);
+      console.log("muting...");
+    };
+
+    useEffect(() => {
+      (async function () {
+        if (user) {
+          const ans = await checkFollow(user.uid);
+          if (ans) {
+            followedUsers.add(user.uid);
+          } else {
+            followedUsers.delete(user.uid);
+          }
+          setFollowedUsers(new Set(followedUsers));
+        }
+      })();
+    }, [user]);
+
+    const handleFollow = async () => {
+      if (loading) {
+        return;
+      }
+      setLoading(true);
+      const isCurrentlyFollowing = followedUsers.has(user.uid);
+      await followUser(user.uid, isCurrentlyFollowing);
+      if (isCurrentlyFollowing) {
+        followedUsers.delete(user.uid);
+      } else {
+        followedUsers.add(user.uid);
+      }
+      setFollowedUsers(new Set(followedUsers));
+      setLoading(false);
+    };
+
+    const { chats } = useSelector((state) => state.user);
+
+    return (
+      <>
+        {isLoading && (
           <View
             style={{
               justifyContent: "center",
               alignItems: "center",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              backgroundColor: COLORS.primary,
               zIndex: 10,
               position: "absolute",
               bottom: 0,
@@ -341,45 +253,74 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
               left: 0,
             }}
           >
-            <View style={tw`p-2 bg-black/50 rounded-full`}>
-              <Feather
-                name={mute ? "volume-x" : "volume-2"}
-                size={30}
-                color={"white"}
-              />
-            </View>
+            <ActivityIndicator size={79} color={COLORS.secondary} />
           </View>
-        </TouchableWithoutFeedback>
-      )}
-      <Video
-        ref={video}
-        style={styles.container}
-        source={{
-          uri: item.media[0],
-        }}
-        useNativeControls={false}
-        resizeMode={ResizeMode.COVER}
-        shouldPlay={false}
-        isLooping
-        usePoster
-        onLoadStart={handleLoadStart}
-        posterSource={{ uri: item.media[1] }}
-        posterStyle={{ resizeMode: "cover", height: "100%" }}
-        onReadyForDisplay={handleReadyForDisplay}
-      />
-      <TouchableWithoutFeedback
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        onPress={handleMuteToggle}
-        onLongPress={handleMuteToggleLong}
-      >
-        <View
-          style={tw`absolute bottom-0 left-0 right-0 top-0 justify-end z-2`}
-        >
-          {!videoStop && (
+        )}
+
+        {showPopup && (
+          <TouchableWithoutFeedback>
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 10,
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                borderRadius: 9999,
+              }}
+            >
+              <View style={tw`p-2 bg-black/50 rounded-full`}>
+                <Feather name="play" size={24} color="white" />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+
+        {comingFromChat ? (
+          <TouchableOpacity
+            style={tw`absolute flex justify-center items-center z-15 top-4 left-4 w-10 h-10 `}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color="#fff" />
+          </TouchableOpacity>
+        ) : null}
+
+        <Video
+          ref={video}
+          style={styles.container}
+          source={{
+            uri: item.media[0],
+          }}
+          useNativeControls={false}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay={false}
+          isLooping
+          usePoster
+          onLoadStart={handleLoadStart}
+          posterSource={{ uri: item.media[1] }}
+          posterStyle={{ resizeMode: "cover", height: "100%" }}
+          onReadyForDisplay={handleReadyForDisplay}
+        />
+        <TouchableWithoutFeedback onPress={togglePlayPause}>
+          <View
+            style={tw`absolute bottom-0 left-0 right-0 top-0 justify-end z-2`}
+          >
             <>
-              {/* // like , comment and share */}
+              {/* // volume, like , comment and share */}
               <View style={tw`py-2 px-2 flex gap-2 items-end`}>
+                <View
+                  style={tw`p-1 bg-black/50 rounded-full flex gap-0 items-center `}
+                >
+                  <TouchableWithoutFeedback onPress={handleMuteToggle}>
+                    <Feather
+                      name={mute ? "volume-x" : "volume-2"}
+                      size={24}
+                      color={"white"}
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
                 <View style={tw`flex gap-0 items-center`}>
                   <TouchableOpacity onPress={() => HandleLike(item.id)}>
                     {isLike ? (
@@ -420,11 +361,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                 <View style={tw`flex gap-0 items-center`}>
                   <TouchableOpacity
                     onPress={() => {
-                      // ToastAndroid.show(
-                      //   "Feature coming soon.",
-                      //   ToastAndroid.SHORT
-                      // );
-                      handleShare();
+                      setShareModal(true);
                     }}
                   >
                     <Feather
@@ -449,7 +386,12 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                   isValidUrl(user?.photoURL) &&
                   !imageFailedToLoad ? (
                     <Image
-                      source={{ uri: user?.photoURL }}
+                      source={{
+                        uri:
+                          Platform.OS === "web"
+                            ? "../../../assets/icon.png"
+                            : user?.photoURL,
+                      }}
                       style={{
                         width: 35,
                         height: 35,
@@ -490,7 +432,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
               {/* hashtags */}
               <View style={tw`py-2 px-4`}>
                 <FlatList
-                  key={index}
+                  key={item}
                   data={item.hashtags}
                   renderItem={renderItem}
                   keyExtractor={(item, index) => item.key || String(index)}
@@ -512,7 +454,7 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                 >
                   {item.description}
                 </Text>
-                <TouchableOpacity onPress={() => handleOpen(item.newslink)}>
+                <TouchableOpacity onPress={() => handleLinkOpen(item.newslink)}>
                   <LinearGradient
                     colors={["#53C8D8", "#668AF7"]}
                     style={tw`py-2`}
@@ -528,19 +470,27 @@ export const PostSingle = forwardRef(({ item, ...props }, parentRef) => {
                 </TouchableOpacity>
               </View>
             </>
-          )}
 
-          {isCommentModalVisible && (
-            <CommentModel
-              isVisible={isCommentModalVisible}
-              onClose={closeModal}
-              post={item}
-            />
-          )}
-        </View>
-      </TouchableWithoutFeedback>
-    </>
-  );
-});
+            {isCommentModalVisible && (
+              <CommentModel
+                isVisible={isCommentModalVisible}
+                onClose={OpenComments}
+                post={item}
+              />
+            )}
+            {ShareModalOpen && (
+              <ShareModal
+                isVisible={ShareModalOpen}
+                onClose={closeShareModal}
+                chats={chats}
+                itemm={item}
+              />
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+      </>
+    );
+  }
+);
 
 export default PostSingle;

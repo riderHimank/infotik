@@ -1,12 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Dimensions, Image, SafeAreaView, ScrollView, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { COLORS } from '../constants';
 import { login } from '../redux/actions/user';
+import Toast from 'react-native-toast-message';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -21,7 +22,13 @@ const Login = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      ToastAndroid.show('Please enter email and password.', ToastAndroid.SHORT);
+      Toast.show({
+        type: "error",
+        text1: "Incorrect values",
+        text2: "Please enter email and password",
+        text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+        text2Style: tw`text-[12px] text-red-600`,
+      });
       return
     }
     setloading(true);
@@ -36,7 +43,14 @@ const Login = () => {
     }
     else {
       setloading(false);
-      ToastAndroid.show('Incorrect email or password', ToastAndroid.SHORT);
+      Toast.show({
+        type: "error",
+        text1: "Incorrect email/password",
+        text2: "Please enter correct email and password",
+        text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+        text2Style: tw`text-[12px] text-red-600`,
+
+      });
 
     }
   }
@@ -63,7 +77,14 @@ const Login = () => {
               </View>
             </View>
             <View>
-              <TouchableOpacity onPress={() => ToastAndroid.show('Coming soon', ToastAndroid.SHORT)}>
+              <TouchableOpacity onPress={() =>
+                Toast.show({
+                  type: "info",
+                  text1: "Coming soon!",
+                  text2: "This feature is not available yet!",
+                  text1Style: tw`text-[14px] text-[${COLORS.primary}]`,
+                  text2Style: tw`text-[12px] text-green-600`,
+                })}>
                 <Text style={tw.style(` text-center text-white text-[13px] mb-3`, { fontFamily: 'Montserrat' })}> Forgot Password?</Text>
               </TouchableOpacity>
             </View>
